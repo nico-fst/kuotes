@@ -25,7 +25,7 @@ struct kuotes_widget: Widget {
 #Preview(as: .systemMedium) {
     kuotes_widget()
 } timeline: {
-    SimpleEntry(date: .now)
-    SimpleEntry(date: .now)
+    SimpleEntry(date: .now, kuote: Kuote.templateKuote)
+    SimpleEntry(date: .now, kuote: Kuote.templateKuote)
 }
 

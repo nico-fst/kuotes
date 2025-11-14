@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		976A6DDC2EC76E220026F4AD /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 976A6DDB2EC76E220026F4AD /* SwiftSoup */; };
 		97F989732EC62C7800145178 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97F989722EC62C7800145178 /* WidgetKit.framework */; };
 		97F989752EC62C7800145178 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97F989742EC62C7800145178 /* SwiftUI.framework */; };
 		97F989862EC62C7900145178 /* kuotes-widgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 97F989702EC62C7800145178 /* kuotes-widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -44,6 +45,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		976A6DE22EC7EDC10026F4AD /* Exceptions for "kuotes" folder in "kuotes-widgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models.swift,
+			);
+			target = 97F9896F2EC62C7800145178 /* kuotes-widgetExtension */;
+		};
 		97F989872EC62C7900145178 /* Exceptions for "kuotes-widget" folder in "kuotes-widgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -56,6 +64,9 @@
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		97F9895E2EC62B2300145178 /* kuotes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				976A6DE22EC7EDC10026F4AD /* Exceptions for "kuotes" folder in "kuotes-widgetExtension" target */,
+			);
 			path = kuotes;
 			sourceTree = "<group>";
 		};
@@ -74,6 +85,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				976A6DDC2EC76E220026F4AD /* SwiftSoup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -139,6 +151,7 @@
 			);
 			name = kuotes;
 			packageProductDependencies = (
+				976A6DDB2EC76E220026F4AD /* SwiftSoup */,
 			);
 			productName = kuotes;
 			productReference = 97F9895C2EC62B2300145178 /* kuotes.app */;
@@ -193,6 +206,9 @@
 			);
 			mainGroup = 97F989532EC62B2300145178;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				976A6DDA2EC76E220026F4AD /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 97F9895D2EC62B2300145178 /* Products */;
 			projectDirPath = "";
@@ -378,6 +394,7 @@
 				DEVELOPMENT_TEAM = Y8K762KJBC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Kuotes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -410,6 +427,7 @@
 				DEVELOPMENT_TEAM = Y8K762KJBC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = Kuotes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -523,6 +541,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		976A6DDA2EC76E220026F4AD /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.11.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		976A6DDB2EC76E220026F4AD /* SwiftSoup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 976A6DDA2EC76E220026F4AD /* XCRemoteSwiftPackageReference "SwiftSoup" */;
+			productName = SwiftSoup;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 97F989542EC62B2300145178 /* Project object */;
 }

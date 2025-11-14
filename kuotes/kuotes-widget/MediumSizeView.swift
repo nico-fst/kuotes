@@ -13,13 +13,13 @@ struct MediumSizeView: View {
     
     var body: some View {
         VStack() {
-            Text("❝ Every action you take is a vote for the type of person you wish to become. ❞")
+            Text("❝ \(entry.kuote.text) ❞")
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .opacity(0.7)
             
             Spacer()
             
-            Text("~ Atomic Habits (page 38)")
+            Text(entry.kuote.fileItem.displayName)
                 .font(.footnote)
                 .opacity(0.4)
         }
