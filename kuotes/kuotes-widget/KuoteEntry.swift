@@ -7,7 +7,7 @@
 
 import WidgetKit
 
-struct SimpleEntry: TimelineEntry {
+struct KuoteEntry: TimelineEntry {
     let date: Date
     let kuote: Kuote
 }

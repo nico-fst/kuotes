@@ -12,7 +12,12 @@ import SwiftData
 struct kuotesApp: App {    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Kuote.self, Folder.self])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        let modelConfiguration = ModelConfiguration(
+            schema: schema,
+            // AppGroup auswählen, auf die auch Widgets Zugriff haben
+            url: FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.de.nicostern.kuotes")!
+                .appendingPathComponent("kuotes.sqlite")
+        )
         
         do {
             return try ModelContainer(for: schema, configurations: [modelConfiguration])

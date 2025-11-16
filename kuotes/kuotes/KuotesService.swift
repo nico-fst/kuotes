@@ -14,6 +14,7 @@ class KuotesService {
     @Environment(\.modelContext) private var modelContext
     @AppStorage("webdavURL") var webdavURL: String = ""
     @AppStorage("webdavUsername") var webdavUsername: String = ""
+    @Query private var kuotes: [Kuote]
     
     static let shared = KuotesService()
     
@@ -120,11 +121,12 @@ class KuotesService {
         }
     }
     
-    func getAllKuotes() -> [Kuote]? {
-        do {
-            return try modelContext.fetch(FetchDescriptor<Kuote>())
-        } catch {
-            return nil
+    func getKuote(id: String) -> Kuote? {
+        if let uuid = UUID(uuidString: id) {
+            if let match = kuotes.first(where: { $0.id == uuid }) {
+                return match
+            }
         }
+        return nil
     }
 }

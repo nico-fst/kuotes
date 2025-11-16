@@ -16,7 +16,7 @@ struct ContentView: View {
     @Query private var folders: [Folder]
     @Query private var kuotes: [Kuote]
     
-    private var services = KuotesService()
+    @State private var selectedKuote: Kuote? = nil
     
     func reloadFolders() async {
         do {
@@ -27,7 +27,7 @@ struct ContentView: View {
             }
             
             // neue folder speichern
-            let folders = try await services.fetchFolder(from: "/")
+            let folders = try await KuotesService.shared.fetchFolder(from: "/")
             for folder in folders {
                 let newFolder = Folder(name: folder.name, href: folder.href)
                 print(newFolder.name)
@@ -50,8 +50,8 @@ struct ContentView: View {
             }
             
             // neue Kuotes speichern
-            let kuoteFiles: [FileItem] = try await services.fetchKuoteFiles(from: selectedKuotesFolderPath)
-            let newKuotes: [Kuote] = try await services.fetchKuotesForFiles(for: kuoteFiles)
+            let kuoteFiles: [FileItem] = try await KuotesService.shared.fetchKuoteFiles(from: selectedKuotesFolderPath)
+            let newKuotes: [Kuote] = try await KuotesService.shared.fetchKuotesForFiles(for: kuoteFiles)
             for kuote in newKuotes {
                 modelContext.insert(kuote)
             }
@@ -71,15 +71,70 @@ struct ContentView: View {
                         ForEach(kuotes) { kuote in
                             VStack(alignment: .leading, spacing: 4) {
                                 Text(kuote.fileItem.displayName)
-                                Text("@ \(kuote.chapter)")
                                     .fontWeight(.bold)
+                                Text(kuote.chapter)
+                                    .italic()
                                 Text(kuote.text)
+                                    .lineLimit(2)
+                            }
+                            .onTapGesture {
+                                selectedKuote = kuote
+                            }
+                            Button("Open Kuote in App") {
+                                let urlString = "kuotes://kuote/\(kuote.id.uuidString.lowercased())"
+                                print("Trying to open URL: \(urlString)")
+
+                                if let url = URL(string: urlString) {
+                                    if UIApplication.shared.canOpenURL(url) {
+                                        UIApplication.shared.open(url) { success in
+                                            print("Open URL success: \(success)")
+                                        }
+                                    } else {
+                                        print("Cannot open URL (canOpenURL returned false)")
+                                    }
+                                } else {
+                                    print("Invalid URL: \(urlString)")
+                                }
                             }
                         }
                     }
                     .refreshable { await reloadKuotes() }
                     .navigationTitle("Kuotes")
                     .navigationSubtitle("Fetched from \(webdavURL)\(selectedKuotesFolderPath)")
+                    .sheet(item: $selectedKuote) { kuote in
+                        NavigationStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Spacer()
+                                
+                                Text(kuote.chapter)
+                                    .font(.headline)
+                                    .italic()
+                                
+                                Text(kuote.text)
+                                Text("On page \(String(kuote.pageno))")
+                                    .font(.subheadline)
+                                    .opacity(0.3)
+                                
+                                Spacer()
+                            }
+                            .navigationTitle(kuote.fileItem.displayName)
+                            .padding()
+                        }
+                        .presentationDetents([.medium, .large])
+                        .onOpenURL { url in
+                            guard
+                                url.scheme == "kuotes",
+                                url.host == "kuote",
+                                url.pathComponents.count > 1
+                            else {
+                                print("Error opening link: \(url)")
+                                return
+                            }
+                            let id = url.pathComponents[1]
+                            
+                            selectedKuote = KuotesService.shared.getKuote(id: id)
+                        }
+                    }
                 }
             }
             Tab("Folders", systemImage: "folder.fill") {

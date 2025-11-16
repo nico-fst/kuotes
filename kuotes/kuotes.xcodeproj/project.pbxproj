@@ -38,6 +38,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		976A6DE92EC8B5620026F4AD /* kuotes-widgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "kuotes-widgetExtension.entitlements"; sourceTree = "<group>"; };
 		97F9895C2EC62B2300145178 /* kuotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kuotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97F989702EC62C7800145178 /* kuotes-widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "kuotes-widgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		97F989722EC62C7800145178 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -52,6 +53,13 @@
 			);
 			target = 97F9896F2EC62C7800145178 /* kuotes-widgetExtension */;
 		};
+		976A6DEB2EC8DE0D0026F4AD /* Exceptions for "kuotes" folder in "kuotes" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 97F9895B2EC62B2300145178 /* kuotes */;
+		};
 		97F989872EC62C7900145178 /* Exceptions for "kuotes-widget" folder in "kuotes-widgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -65,6 +73,7 @@
 		97F9895E2EC62B2300145178 /* kuotes */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				976A6DEB2EC8DE0D0026F4AD /* Exceptions for "kuotes" folder in "kuotes" target */,
 				976A6DE22EC7EDC10026F4AD /* Exceptions for "kuotes" folder in "kuotes-widgetExtension" target */,
 			);
 			path = kuotes;
@@ -104,6 +113,7 @@
 		97F989532EC62B2300145178 = {
 			isa = PBXGroup;
 			children = (
+				976A6DE92EC8B5620026F4AD /* kuotes-widgetExtension.entitlements */,
 				97F9895E2EC62B2300145178 /* kuotes */,
 				97F989762EC62C7800145178 /* kuotes-widget */,
 				97F989712EC62C7800145178 /* Frameworks */,
@@ -389,11 +399,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = kuotes/kuotes.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y8K762KJBC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = kuotes/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Kuotes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -422,11 +434,13 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = kuotes/kuotes.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y8K762KJBC;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = kuotes/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Kuotes;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
@@ -455,6 +469,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "kuotes-widgetExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y8K762KJBC;
@@ -485,6 +500,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = "kuotes-widgetExtension.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Y8K762KJBC;

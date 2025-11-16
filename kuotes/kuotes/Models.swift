@@ -53,7 +53,9 @@ struct KuoteData: Decodable {
 }
 
 @Model
-final class Kuote {
+final class Kuote: Identifiable {
+    var id = UUID()
+    
     var datetime: Date
     var fileItem: FileItem
     
