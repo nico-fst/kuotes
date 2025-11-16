@@ -8,7 +8,7 @@
 import SwiftUI
 import WidgetKit
 
-struct MediumSizeView: View {
+struct LargeSizeView: View {
     var entry: Provider.Entry
     
     var body: some View {
@@ -21,12 +21,12 @@ struct MediumSizeView: View {
                         .font(.system(size: 20, weight: .bold))
                         .foregroundColor(.white)
                         .opacity(0.3)
-                        .lineLimit(1)
-                        .frame(width: geometry.size.width * 0.9, height: displayNameHeight, alignment: .leading)
+                        .lineLimit(2)
+                        .frame(width: geometry.size.width * 0.85, alignment: .leading)
                     Text("\(entry.kuote.text)")
                         .font(.system(size: 32))
-                        .lineLimit(5)
-                        .minimumScaleFactor(0.4)
+                        .lineLimit(13)
+                        .minimumScaleFactor(0.3)
                         .foregroundColor(.white)
                         .opacity(0.6)
                     Text("\(entry.kuote.chapter) ⋅ page \(entry.kuote.pageno)")
@@ -42,7 +42,7 @@ struct MediumSizeView: View {
                 .frame(width: geometry.size.width, height: geometry.size.height) // platziert alles mittig
                 
                 Text("❞")
-                    .font(.system(size: 30, weight: .bold))
+                    .font(.system(size: 50, weight: .bold))
                     .foregroundColor(.white)
                     .opacity(0.3)
                     .frame(height: displayNameHeight)

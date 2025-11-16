@@ -80,22 +80,6 @@ struct ContentView: View {
                             .onTapGesture {
                                 selectedKuote = kuote
                             }
-                            Button("Open Kuote in App") {
-                                let urlString = "kuotes://kuote/\(kuote.id.uuidString.lowercased())"
-                                print("Trying to open URL: \(urlString)")
-
-                                if let url = URL(string: urlString) {
-                                    if UIApplication.shared.canOpenURL(url) {
-                                        UIApplication.shared.open(url) { success in
-                                            print("Open URL success: \(success)")
-                                        }
-                                    } else {
-                                        print("Cannot open URL (canOpenURL returned false)")
-                                    }
-                                } else {
-                                    print("Invalid URL: \(urlString)")
-                                }
-                            }
                         }
                     }
                     .refreshable { await reloadKuotes() }
@@ -109,9 +93,9 @@ struct ContentView: View {
                                 Text(kuote.chapter)
                                     .font(.headline)
                                     .italic()
-                                
                                 Text(kuote.text)
-                                Text("On page \(String(kuote.pageno))")
+                                    .background(kuote.color.swiftUIColor)
+                                Text(verbatim: "\(kuote.drawer) on page \(kuote.pageno)") // verbatim constructs non-localized string (localized deprecated)
                                     .font(.subheadline)
                                     .opacity(0.3)
                                 

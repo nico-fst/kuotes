@@ -104,13 +104,12 @@ class KuotesService {
             for file in files {
                 let kuotes: [KuoteData] = try await fetch(from: file.href.absoluteString)
                 for kuote in kuotes {
-                    let formatter = DateFormatter()
-                    formatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
-                    
-                    if let date = formatter.date(from: kuote.datetime) {
-                        let newKuote = Kuote(datetime: date, fileItem: file, pageno: kuote.pageno, chapter: kuote.chapter, text: kuote.text, drawer: kuote.drawer, color: kuote.color)
-                        print(newKuote.chapter)
+                    // using convenience init for parsing fields
+                    if let newKuote = Kuote(data: kuote, fileItem: file) {
+                        print(newKuote.drawer)
                         res.append(newKuote)
+                    } else {
+                        print("Skipping invalid Kuote in file: \(file.name)")
                     }
                 }
             }

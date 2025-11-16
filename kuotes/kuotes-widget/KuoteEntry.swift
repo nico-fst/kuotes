@@ -10,4 +10,5 @@ import WidgetKit
 struct KuoteEntry: TimelineEntry {
     let date: Date
     let kuote: Kuote
+    let configuration: ConfigurationAppIntent
 }

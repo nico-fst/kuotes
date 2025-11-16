@@ -33,15 +33,23 @@ extension SharedModelConfig {
     }()
 }
 
-struct Provider: TimelineProvider{
+struct Provider: AppIntentTimelineProvider{
     @MainActor // wegen FetchDescriptor
-    private func fetchKuotes() -> [Kuote]? {
+    private func fetchKuotes(colorFilter: [ColorType]?, drawerFilter: [DrawerType]?) -> [Kuote]? {
         do {
             let container = SharedModelConfig.sharedContainer
             let descriptor = FetchDescriptor<Kuote>()
-            let kuotes = try container.mainContext.fetch(descriptor)
+            let allKuotes = try container.mainContext.fetch(descriptor)
             
-            return kuotes
+            // filter using colorFilter, drawerFilter
+            var filteredKuotes = allKuotes
+            if let colorFilter = colorFilter, !colorFilter.isEmpty { // wenn != nil Wert entpackt und unter selbem Namen colorFilter verfügbar gemacht
+                filteredKuotes = filteredKuotes.filter { colorFilter.contains($0.color) }
+            }
+            if let drawerFilter = drawerFilter, !drawerFilter.isEmpty {
+                filteredKuotes = filteredKuotes.filter { drawerFilter.contains($0.drawer) }
+            }
+            return filteredKuotes
         } catch {
             print("Error fetching all Kuotes in Provder: ", error)
             return nil
@@ -50,43 +58,37 @@ struct Provider: TimelineProvider{
     
     // dummy data, e.g. in gallery
     func placeholder(in context: Context) -> KuoteEntry {
-        KuoteEntry(date: Date(), kuote: .templateKuote)
+        KuoteEntry(date: Date(),
+                   kuote: .templateShort,
+                   configuration: ConfigurationAppIntent())
     }
 
-    // completion-Aufruf asynchron => "entkommt" der f
-    func getSnapshot(in context: Context, completion: @escaping (KuoteEntry) -> ()) {
-        Task {
-            let kuotes = await fetchKuotes() ?? []
-            let randomKuote = kuotes.randomElement() ?? .templateKuote
-            let entry = KuoteEntry(date: Date(), kuote: randomKuote)
-            completion(entry) // Closure, die aufgerufen, sobald Entry erstellt
-        }
+    func snapshot(for configuration: ConfigurationAppIntent, in context: Context) async -> KuoteEntry {
+        let kuotes = await fetchKuotes(colorFilter: configuration.colorFilter, drawerFilter: configuration.drawerFilter) ?? []
+        let randomKuote = kuotes.randomElement() ?? .templateShort
+        return KuoteEntry(date: Date(),
+                          kuote: randomKuote,
+                          configuration: configuration)
+        // kein completion(), weil async
     }
     
-    func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
+    func timeline(for configuration: ConfigurationAppIntent, in context: Context) async -> Timeline<KuoteEntry> {
         var entries: [KuoteEntry] = []
+        let kuotes = await fetchKuotes(colorFilter: configuration.colorFilter, drawerFilter: configuration.drawerFilter) ?? []
         
-        Task {
-            let kuotes = await fetchKuotes() ?? []
-            for kuote in kuotes {
-                print("Kuotes: ", kuote.text)
-            }
-            
-            // Generate a timeline consisting of X entries Y apart, starting from the current date.
-            let currentDate = Date()
-            for hourOffset in 0 ..< 11 {
-                let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
-                let entry = KuoteEntry(
-                    date: entryDate,
-                    kuote: kuotes.randomElement() ?? .templateKuote
-                )
-                entries.append(entry)
-                print("Neuer Timeline Eintrag: ", entry.kuote.text)
-            }
-            
-            let timeline = Timeline(entries: entries, policy: .atEnd)
-            completion(timeline)
+        // Generate a timeline consisting of X entries Y apart, starting from the current date.
+        let currentDate = Date()
+        for hourOffset in 0 ..< 11 {
+            let entryDate = Calendar.current.date(byAdding: .hour, value: hourOffset, to: currentDate)!
+            let entry = KuoteEntry(
+                date: entryDate,
+                kuote: kuotes.randomElement() ?? .templateShort,
+                configuration: configuration
+            )
+            entries.append(entry)
         }
+        
+        return Timeline(entries: entries, policy: .atEnd)
     }
 }
 

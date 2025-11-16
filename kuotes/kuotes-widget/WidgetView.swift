@@ -15,7 +15,9 @@ struct WidgetView: View {
     var body: some View {
         switch widgetFamily {
         case .systemMedium:
-          MediumSizeView(entry: entry)
+            MediumSizeView(entry: entry)
+        case .systemLarge:
+            LargeSizeView(entry: entry)
         default:
             Text("Never executed, but switch has to be exhaustive")
         }

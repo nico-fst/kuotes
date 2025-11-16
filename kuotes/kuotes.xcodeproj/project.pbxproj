@@ -38,7 +38,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		976A6DE92EC8B5620026F4AD /* kuotes-widgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "kuotes-widgetExtension.entitlements"; sourceTree = "<group>"; };
 		97F9895C2EC62B2300145178 /* kuotes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = kuotes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		97F989702EC62C7800145178 /* kuotes-widgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "kuotes-widgetExtension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		97F989722EC62C7800145178 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
@@ -113,7 +112,6 @@
 		97F989532EC62B2300145178 = {
 			isa = PBXGroup;
 			children = (
-				976A6DE92EC8B5620026F4AD /* kuotes-widgetExtension.entitlements */,
 				97F9895E2EC62B2300145178 /* kuotes */,
 				97F989762EC62C7800145178 /* kuotes-widget */,
 				97F989712EC62C7800145178 /* Frameworks */,
