@@ -177,7 +177,6 @@ extension Kuote {
         
         // Drawer: String -> DrawerType
         let drawerEnum = DrawerType(toMapped: data.drawer) // uses init correcting String names from Sync Highlights Plugin
-        print(data.drawer, "->", drawerEnum)
         
         self.init(datetime: date,
                   fileItem: fileItem,

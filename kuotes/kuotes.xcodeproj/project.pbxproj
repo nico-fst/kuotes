@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		976A6DDC2EC76E220026F4AD /* SwiftSoup in Frameworks */ = {isa = PBXBuildFile; productRef = 976A6DDB2EC76E220026F4AD /* SwiftSoup */; };
+		97DB7EC72ECA46BE0045E698 /* Fuzi in Frameworks */ = {isa = PBXBuildFile; productRef = 97DB7EC62ECA46BE0045E698 /* Fuzi */; };
 		97F989732EC62C7800145178 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97F989722EC62C7800145178 /* WidgetKit.framework */; };
 		97F989752EC62C7800145178 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97F989742EC62C7800145178 /* SwiftUI.framework */; };
 		97F989862EC62C7900145178 /* kuotes-widgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 97F989702EC62C7800145178 /* kuotes-widgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -93,7 +93,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				976A6DDC2EC76E220026F4AD /* SwiftSoup in Frameworks */,
+				97DB7EC72ECA46BE0045E698 /* Fuzi in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,7 +159,7 @@
 			);
 			name = kuotes;
 			packageProductDependencies = (
-				976A6DDB2EC76E220026F4AD /* SwiftSoup */,
+				97DB7EC62ECA46BE0045E698 /* Fuzi */,
 			);
 			productName = kuotes;
 			productReference = 97F9895C2EC62B2300145178 /* kuotes.app */;
@@ -215,7 +215,7 @@
 			mainGroup = 97F989532EC62B2300145178;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				976A6DDA2EC76E220026F4AD /* XCRemoteSwiftPackageReference "SwiftSoup" */,
+				97DB7EC52ECA46BE0045E698 /* XCRemoteSwiftPackageReference "Fuzi" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 97F9895D2EC62B2300145178 /* Products */;
@@ -557,21 +557,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		976A6DDA2EC76E220026F4AD /* XCRemoteSwiftPackageReference "SwiftSoup" */ = {
+		97DB7EC52ECA46BE0045E698 /* XCRemoteSwiftPackageReference "Fuzi" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/scinfu/SwiftSoup.git";
+			repositoryURL = "https://github.com/cezheng/Fuzi";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 2.11.1;
+				minimumVersion = 3.1.3;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		976A6DDB2EC76E220026F4AD /* SwiftSoup */ = {
+		97DB7EC62ECA46BE0045E698 /* Fuzi */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 976A6DDA2EC76E220026F4AD /* XCRemoteSwiftPackageReference "SwiftSoup" */;
-			productName = SwiftSoup;
+			package = 97DB7EC52ECA46BE0045E698 /* XCRemoteSwiftPackageReference "Fuzi" */;
+			productName = Fuzi;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

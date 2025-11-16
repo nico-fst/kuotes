@@ -22,17 +22,11 @@ struct ContentView: View {
         do {
             // alte folder löschen
             let oldFolders = try modelContext.fetch(FetchDescriptor<Folder>())
-            for folder in oldFolders {
-                modelContext.delete(folder)
-            }
+            oldFolders.forEach { modelContext.delete($0) }
             
             // neue folder speichern
-            let folders = try await KuotesService.shared.fetchFolder(from: "/")
-            for folder in folders {
-                let newFolder = Folder(name: folder.name, href: folder.href)
-                print(newFolder.name)
-                modelContext.insert(newFolder)
-            }
+            let folders = try await FetchServices.shared.fetchFolders(endpoint: "/")
+            folders.forEach { modelContext.insert($0) }
             
             // speichern - optional, weil eig mit Auto-Save implizit
             try modelContext.save()
@@ -50,8 +44,7 @@ struct ContentView: View {
             }
             
             // neue Kuotes speichern
-            let kuoteFiles: [FileItem] = try await KuotesService.shared.fetchKuoteFiles(from: selectedKuotesFolderPath)
-            let newKuotes: [Kuote] = try await KuotesService.shared.fetchKuotesForFiles(for: kuoteFiles)
+            let newKuotes: [Kuote] = try await FetchServices.shared.fetchKuotes(endpoint: selectedKuotesFolderPath)
             for kuote in newKuotes {
                 modelContext.insert(kuote)
             }
@@ -84,7 +77,7 @@ struct ContentView: View {
                     }
                     .refreshable { await reloadKuotes() }
                     .navigationTitle("Kuotes")
-                    .navigationSubtitle("Fetched from \(webdavURL)\(selectedKuotesFolderPath)")
+                    .navigationSubtitle("Fetched from \(selectedKuotesFolderPath)")
                     .sheet(item: $selectedKuote) { kuote in
                         NavigationStack {
                             VStack(alignment: .leading, spacing: 4) {
@@ -116,7 +109,7 @@ struct ContentView: View {
                             }
                             let id = url.pathComponents[1]
                             
-                            selectedKuote = KuotesService.shared.getKuote(id: id)
+                            selectedKuote = FetchServices.shared.getKuote(id: id)
                         }
                     }
                 }
@@ -136,7 +129,7 @@ struct ContentView: View {
                                     Text(folder.name)
                                 }
                             }
-                            Text("Only the top-level folder will be listed here. Set the URL manually when using a subfolder.")
+                            Text("Only the top-level folder will be listed here. Set the URL manually when using a subfolder or no folder is listed here.")
                                 .foregroundColor(.red)
                                 .font(.footnote)
                         }
