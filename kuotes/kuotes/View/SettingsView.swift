@@ -13,7 +13,6 @@ struct SettingsView: View {
     @AppStorage("webdavURL") var webdavURL: String = ""
     @AppStorage("webdavUsername") var webdavUsername: String = ""
     @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath: String = ""
-    
     @State private var showingPasswordPopup = false
     @State private var tempPassword: String = ""
     
