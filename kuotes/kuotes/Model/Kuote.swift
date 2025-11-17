@@ -70,9 +70,25 @@ extension Kuote {
                 displayName: "Atomic Habits",
                 href: URL(string: "/Documents/Bastian%20Sick%20-%20Dativ%20ist%20dem%20Genitiv%20sein%20Tod.sdr.json")!
             ),
-            pageno: 38,
+            pageno: 99,
             chapter: "Some Chapter",
             text: "Every action you take is a vote for the type of person you wish to become.",
+            drawer: .lighten,
+            color: .gray
+        )
+    }
+    
+    static var templateMedium: Kuote {
+        Kuote(
+            datetime: Date(),
+            fileItem: FileItem(
+                name: "Bastian Sick - Der Dativ ist dem Genitiv sein Tod.sdr.json",
+                displayName: "Bastian Sick - Der Dativ ist dem Genitiv sein Tod",
+                href: URL(string: "/Documents/Bastian%20Sick%20-%20Dativ%20ist%20dem%20Genitiv%20sein%20Tod.sdr.json")!
+            ),
+            pageno: 31,
+            chapter: "Deutschland, deine Apostroph's",
+            text: "Liest man in der Sauna den Hinweis »Kein Schweiß aufs Holz«, so brennt es einem in den Augen. Ebenso beim Anblick von Läden, die »Alles für's Kind« anbieten. Zwar ist der Apostroph hier überflüssig, aber immerhin scheint sich der Schildermaler noch was dabei gedacht zu haben.",
             drawer: .lighten,
             color: .gray
         )
@@ -82,8 +98,8 @@ extension Kuote {
         Kuote(
             datetime: Date(),
             fileItem: FileItem(
-                name: "Bastian Sick - Dativ ist dem Genitiv sein Tod.sdr.json",
-                displayName: "Bastian Sick - Dativ ist dem Genitiv sein Tod",
+                name: "Bastian Sick - Der Dativ ist dem Genitiv sein Tod.sdr.json",
+                displayName: "Bastian Sick - Der Dativ ist dem Genitiv sein Tod",
                 href: URL(string: "/Documents/Bastian%20Sick%20-%20Dativ%20ist%20dem%20Genitiv%20sein%20Tod.sdr.json")!
             ),
             pageno: 75,

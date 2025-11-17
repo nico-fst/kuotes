@@ -1,5 +1,5 @@
 //
-//  kuotes_widget.swift
+//  KuotesWidget.swift
 //  kuotes-widget
 //
 //  Created by Nico Stern on 13.11.25.
@@ -9,7 +9,7 @@ import WidgetKit
 import SwiftUI
 
 @main
-struct kuotes_widget: Widget {
+struct KuotesWidget: Widget {
     let kind: String = "kuotes_widget"
 
     var body: some WidgetConfiguration {
@@ -37,15 +37,17 @@ extension ConfigurationAppIntent {
 }
 
 #Preview(as: .systemMedium) {
-    kuotes_widget()
+    KuotesWidget()
 } timeline: {
     KuoteEntry(date: .now, kuote: Kuote.templateShort, configuration: .templateGray)
+    KuoteEntry(date: .now, kuote: Kuote.templateMedium, configuration: .templateGray)
     KuoteEntry(date: .now, kuote: Kuote.templateLong, configuration: .templateGray)
 }
 
 #Preview(as: .systemLarge) {
-    kuotes_widget()
+    KuotesWidget()
 } timeline: {
     KuoteEntry(date: .now, kuote: Kuote.templateShort, configuration: .templateGray)
+    KuoteEntry(date: .now, kuote: Kuote.templateMedium, configuration: .templateGray)
     KuoteEntry(date: .now, kuote: Kuote.templateLong, configuration: .templateGray)
 }
