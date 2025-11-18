@@ -65,11 +65,12 @@ class FetchServices {
     /// - Throws: An error if fetching or decoding fails.
     /// - Returns: An array of Kuote objects extracted from the files.
     func extractKuotesFromFiles(files: [FileItem]) async throws -> [Kuote] {
-        do {
-            var res: [Kuote] = []
-            
-            for file in files {
+        var res: [Kuote] = []
+        
+        for file in files {
+            do {
                 let kuotes: [KuoteData] = try await fetchJSON(from: file.href.absoluteString)
+
                 for kuote in kuotes {
                     // using convenience init for parsing fields
                     if let newKuote = Kuote(data: kuote, fileItem: file) {
@@ -78,12 +79,11 @@ class FetchServices {
                         print("Skipping invalid Kuote in file: \(file.name)")
                     }
                 }
+            } catch {
+                print("Skipping parsing Kuotes from file \(file.name) due to decode error")
             }
-            return res
-        } catch {
-            print("Erorr fetching Kuotes for files: ", error)
-            return []
         }
+        return res
     }
     
     /// Creates a URL from the given endpoint string.
