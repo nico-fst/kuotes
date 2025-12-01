@@ -42,18 +42,6 @@ class FetchServices {
         return newKuotes
     }
     
-    /// Retrieves a Kuote object by its string ID.
-    /// - Parameter id: The string representation of the Kuote's UUID.
-    /// - Returns: A Kuote object if found, otherwise nil.
-    func getKuote(id: String) -> Kuote? {
-        if let uuid = UUID(uuidString: id) {
-            if let match = kuotes.first(where: { $0.id == uuid }) {
-                return match
-            }
-        }
-        return nil
-    }
-    
     
     // ----------------------------------------------
     // HELPER

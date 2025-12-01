@@ -20,7 +20,7 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section(header: Text("WebDAV Connection")) {
-                    TextField("URL (mit https://, ohne '/' am Ende)", text: $webdavURL)
+                    TextField("URL (lead by https://, without trailing '/')", text: $webdavURL)
                         .keyboardType(.URL)
                         .autocapitalization(.none)
                     TextField("Username", text: $webdavUsername)

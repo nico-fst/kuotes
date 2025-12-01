@@ -9,10 +9,12 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @Binding var pendingQuoteID: String? // to be viewed when pressing widget
+
     var body: some View {
         TabView {
             Tab("Kuotes", systemImage: "quote.bubble.fill") {
-               KuotesView()
+               KuotesView(pendingKuoteID: $pendingQuoteID)
             }
             Tab("Folders", systemImage: "folder.fill") {
                 FolderView()
@@ -25,6 +27,6 @@ struct ContentView: View {
 }
 
 #Preview {
-    ContentView()
+    ContentView(pendingQuoteID: .constant(nil))
         .modelContainer(for: [Folder.self, Kuote.self], inMemory: true)
 }

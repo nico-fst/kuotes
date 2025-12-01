@@ -9,7 +9,9 @@ import SwiftUI
 import SwiftData
 
 @main
-struct kuotesApp: App {    
+struct kuotesApp: App {
+    @State private var pendingQuoteID: String? = nil
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Kuote.self, Folder.self])
         let modelConfiguration = ModelConfiguration(
@@ -28,10 +30,18 @@ struct kuotesApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            // .modelContainer: inject Container in Environment-Tree => alle Views haben Zugriff auf DB
+            // ginge auch .modelContainer(for: [Folder.self]
+            ContentView(pendingQuoteID: $pendingQuoteID)
+                .modelContainer(sharedModelContainer)
+                .onOpenURL { url in
+                    if url.scheme == "kuotes",
+                       url.host == "kuote",
+                       url.pathComponents.count > 1 {
+                        let quoteID = url.pathComponents[1]
+                        pendingQuoteID = quoteID
+                    }
+                }
         }
-        // inject Container in Environment-Tree => alle Views haben Zugriff auf DB
-        // ginge auch .modelContainer(for: [Folder.self]
-        .modelContainer(sharedModelContainer)
     }
 }

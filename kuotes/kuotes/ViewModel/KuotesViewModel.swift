@@ -34,4 +34,21 @@ class KuotesViewModel: ObservableObject {
             print("Error replacing cached Kuotes with fetched ones: ", error)
         }
     }
+    
+    /// Retrieves a Kuote object by its string ID.
+    /// - Parameter id: The string representation of the Kuote's UUID.
+    /// - Returns: A Kuote object if found, otherwise nil.
+    func getKuote(id: String) -> Kuote? {
+        do {
+            let kuotes = try self.modelContext.fetch(FetchDescriptor<Kuote>()) // weil nicht direkt Zugriff auf @Query
+            if let uuid = UUID(uuidString: id) {
+                if let match = kuotes.first(where: { $0.id == uuid }) {
+                    return match
+                }
+            }
+        } catch {
+            return nil
+        }
+        return nil
+    }
 }
