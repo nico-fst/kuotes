@@ -1,0 +1,35 @@
+name: iOS Build (app + widgets)
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    name: Build kuotes and kuotes-widgetExtension
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Select Xcode Version
+        run: sudo xcode-select -switch /Applications/Xcode.app
+
+      - name: Build kuotes
+        working-directory: kuotes
+        run: |
+          xcodebuild \
+            -scheme "kuotes" \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            clean build \
+            ONLY_ACTIVE_ARCH=NO
+
+      - name: Build kuotes-widgetExtension
+        working-directory: kuotes
+        run: |
+          xcodebuild \
+            -scheme "kuotes-widgetExtension" \
+            -destination 'platform=iOS Simulator,name=iPhone 17' \
+            clean build \
+            ONLY_ACTIVE_ARCH=NO
