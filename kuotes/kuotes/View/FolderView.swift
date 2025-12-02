@@ -5,15 +5,16 @@
 //  Created by Nico Stern on 16.11.25.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct FolderView: View {
-    @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath: String = ""
+    @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath:
+        String = ""
     @Query private var folders: [Folder]
     @Environment(\.modelContext) private var modelContext
-    @State private var vm: FolderViewModel? = nil
-    
+    @State private var vm: FolderViewModel? = nil // TODO auf oberster Ebene instanziieren
+
     var body: some View {
         NavigationStack {
             VStack {
@@ -23,18 +24,23 @@ struct FolderView: View {
                             Text(folder.href.absoluteString)
                                 .fontWeight(.bold)
                             Button("Select this folder") {
-                                selectedKuotesFolderPath = folder.href.absoluteString
+                                selectedKuotesFolderPath =
+                                    folder.href.absoluteString
                             }
                         } label: {
                             Text(folder.name)
                         }
                     }
-                    Text("Only the top-level folder will be listed here. Set the URL manually when using a subfolder or no folder is listed here.")
-                        .foregroundColor(.red)
-                        .font(.footnote)
+                    Text(
+                        "Only the top-level folder will be listed here. Set the URL manually when using a subfolder or no folder is listed here."
+                    )
+                    .foregroundColor(Color("AccentColor"))
+                    .font(.footnote)
                 }
-                .task { // weil @Environment bei Initializer oben noch nicht available wäre
-                    if vm == nil { vm = FolderViewModel(modelContext: modelContext) }
+                .task {  // weil @Environment bei Initializer oben noch nicht available wäre
+                    if vm == nil {
+                        vm = FolderViewModel(modelContext: modelContext)
+                    }
                 }
                 .refreshable { await vm?.reloadFolders() }
                 .navigationTitle("Select Kuotes Folder")

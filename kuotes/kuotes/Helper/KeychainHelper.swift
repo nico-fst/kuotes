@@ -11,48 +11,52 @@ import Security
 struct KeychainHelper {
     static func save(_ value: String, for key: String) -> Bool {
         guard let data = value.data(using: .utf8) else { return false }
-        
+
         // alten Wert löschen
-        let deleteOldQuery = [ // identifiziert eindeutig
-            kSecClass: kSecClassGenericPassword, // Item-Art: könnte auch Zertifikat, Schlüssel, ...
-            kSecAttrAccount: key // eindeutiger Name
-        ] as CFDictionary
+        let deleteOldQuery =
+            [  // identifiziert eindeutig
+                kSecClass: kSecClassGenericPassword,  // Item-Art: könnte auch Zertifikat, Schlüssel, ...
+                kSecAttrAccount: key,  // eindeutiger Name
+            ] as CFDictionary
         SecItemDelete(deleteOldQuery)
-        
-        let addNewQuery = [
-            kSecClass: kSecClassGenericPassword,
-            kSecAttrAccount: key,
-            kSecValueData: data, // neuer Wert
-            kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock // wann Item zugänglich: könnte auch nur wenn entsperrt, immer, ...
-        ] as CFDictionary
-        
+
+        let addNewQuery =
+            [
+                kSecClass: kSecClassGenericPassword,
+                kSecAttrAccount: key,
+                kSecValueData: data,  // neuer Wert
+                kSecAttrAccessible: kSecAttrAccessibleAfterFirstUnlock,  // wann Item zugänglich: könnte auch nur wenn entsperrt, immer, ...
+            ] as CFDictionary
+
         let status = SecItemAdd(addNewQuery, nil)
         return status == errSecSuccess
     }
-    
+
     static func read(_ key: String) -> String? {
-            let query = [
+        let query =
+            [
                 kSecClass: kSecClassGenericPassword,
                 kSecAttrAccount: key,
                 kSecReturnData: true,
-                kSecMatchLimit: kSecMatchLimitOne
+                kSecMatchLimit: kSecMatchLimitOne,
             ] as CFDictionary
-            
-            var dataTypeRef: AnyObject?
-            let status = SecItemCopyMatching(query, &dataTypeRef)
-            
-            if status == errSecSuccess, let data = dataTypeRef as? Data {
-                return String(data: data, encoding: .utf8)
-            }
-            return nil
+
+        var dataTypeRef: AnyObject?
+        let status = SecItemCopyMatching(query, &dataTypeRef)
+
+        if status == errSecSuccess, let data = dataTypeRef as? Data {
+            return String(data: data, encoding: .utf8)
         }
-        
-        static func delete(_ key: String) {
-            let query = [
+        return nil
+    }
+
+    static func delete(_ key: String) {
+        let query =
+            [
                 kSecClass: kSecClassGenericPassword,
-                kSecAttrAccount: key
+                kSecAttrAccount: key,
             ] as CFDictionary
-            
-            SecItemDelete(query)
-        }
+
+        SecItemDelete(query)
+    }
 }

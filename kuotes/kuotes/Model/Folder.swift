@@ -12,7 +12,7 @@ import SwiftData
 final class Folder {
     var name: String
     var href: URL
-    
+
     init(name: String, href: URL) {
         self.name = name
         self.href = href

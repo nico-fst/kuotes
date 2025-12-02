@@ -5,15 +5,19 @@
 //  Created by Nico Stern on 13.11.25.
 //
 
-import WidgetKit
 import SwiftUI
+import WidgetKit
 
 @main
 struct KuotesWidget: Widget {
     let kind: String = "kuotes_widget"
 
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(kind: kind, intent: ConfigurationAppIntent.self, provider: Provider()) { entry in
+        AppIntentConfiguration(
+            kind: kind,
+            intent: ConfigurationAppIntent.self,
+            provider: Provider()
+        ) { entry in
             WidgetView(entry: entry)
         }
         .supportedFamilies([.systemMedium, .systemLarge])
@@ -28,7 +32,7 @@ extension ConfigurationAppIntent {
         let intent = ConfigurationAppIntent()
         return intent
     }
-    
+
     fileprivate static var templateGray: ConfigurationAppIntent {
         let intent = ConfigurationAppIntent()
         intent.colorFilter = [.gray]
@@ -39,15 +43,39 @@ extension ConfigurationAppIntent {
 #Preview(as: .systemMedium) {
     KuotesWidget()
 } timeline: {
-    KuoteEntry(date: .now, kuote: Kuote.templateShort, configuration: .templateGray)
-    KuoteEntry(date: .now, kuote: Kuote.templateMedium, configuration: .templateGray)
-    KuoteEntry(date: .now, kuote: Kuote.templateLong, configuration: .templateGray)
+    KuoteEntry(
+        date: .now,
+        kuote: Kuote.templateShort,
+        configuration: .templateGray
+    )
+    KuoteEntry(
+        date: .now,
+        kuote: Kuote.templateMedium,
+        configuration: .templateGray
+    )
+    KuoteEntry(
+        date: .now,
+        kuote: Kuote.templateLong,
+        configuration: .templateGray
+    )
 }
 
 #Preview(as: .systemLarge) {
     KuotesWidget()
 } timeline: {
-    KuoteEntry(date: .now, kuote: Kuote.templateShort, configuration: .templateGray)
-    KuoteEntry(date: .now, kuote: Kuote.templateMedium, configuration: .templateGray)
-    KuoteEntry(date: .now, kuote: Kuote.templateLong, configuration: .templateGray)
+    KuoteEntry(
+        date: .now,
+        kuote: Kuote.templateShort,
+        configuration: .templateGray
+    )
+    KuoteEntry(
+        date: .now,
+        kuote: Kuote.templateMedium,
+        configuration: .templateGray
+    )
+    KuoteEntry(
+        date: .now,
+        kuote: Kuote.templateLong,
+        configuration: .templateGray
+    )
 }

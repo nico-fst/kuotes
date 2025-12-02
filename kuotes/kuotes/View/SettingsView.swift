@@ -5,33 +5,42 @@
 //  Created by Nico Stern on 14.11.25.
 //
 
-import SwiftUI
 import Combine
+import SwiftUI
 
 struct SettingsView: View {
     // AppStorage ist Wrapper um UserDefaults - auslesbar auf Festplatte
     @AppStorage("webdavURL") var webdavURL: String = ""
     @AppStorage("webdavUsername") var webdavUsername: String = ""
-    @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath: String = ""
+    @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath:
+        String = ""
     @State private var showingPasswordPopup = false
     @State private var tempPassword: String = ""
-    
+
     var body: some View {
         NavigationStack {
             Form {
                 Section(header: Text("WebDAV Connection")) {
-                    TextField("URL (lead by https://, without trailing '/')", text: $webdavURL)
-                        .keyboardType(.URL)
-                        .autocapitalization(.none)
+                    TextField(
+                        "URL (lead by https://, without trailing '/')",
+                        text: $webdavURL
+                    )
+                    .keyboardType(.URL)
+                    .autocapitalization(.none)
                     TextField("Username", text: $webdavUsername)
                         .autocapitalization(.none)
-                    
-                    TextField("(Optional: Hardcode path/to/folder", text: $selectedKuotesFolderPath)
-                    
-                    Text("webdavURL: \(webdavURL) \nwebdavUsername: \(webdavUsername)\nselectedKuotesFolderPath: \(selectedKuotesFolderPath)")
-                        .font(.footnote)
-                        .opacity(0.3)
-                    
+
+                    TextField(
+                        "(Optional: Hardcode path/to/folder",
+                        text: $selectedKuotesFolderPath
+                    )
+
+                    Text(
+                        "webdavURL: \(webdavURL) \nwebdavUsername: \(webdavUsername)\nselectedKuotesFolderPath: \(selectedKuotesFolderPath)"
+                    )
+                    .font(.footnote)
+                    .opacity(0.3)
+
                     Button("Change WebDAV Password") {
                         showingPasswordPopup.toggle()
                     }
@@ -43,7 +52,7 @@ struct SettingsView: View {
                     VStack {
                         Text("Enter WebDAV Password")
                             .font(.headline)
-                        
+
                         SecureField("Password", text: $tempPassword)
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .padding()
@@ -52,7 +61,7 @@ struct SettingsView: View {
                     .toolbar {
                         // Links: X
                         ToolbarItem(placement: .cancellationAction) {
-                            Button() {
+                            Button {
                                 showingPasswordPopup.toggle()
                             } label: {
                                 Image(systemName: "xmark")
@@ -60,9 +69,15 @@ struct SettingsView: View {
                         }
                         // Rechts: Check
                         ToolbarItem(placement: .confirmationAction) {
-                            Button() {
-                                let success = KeychainHelper.save(tempPassword, for: "webdavPassword")
-                                print("Saved webdavPassword - success: ", success)
+                            Button {
+                                let success = KeychainHelper.save(
+                                    tempPassword,
+                                    for: "webdavPassword"
+                                )
+                                print(
+                                    "Saved webdavPassword - success: ",
+                                    success
+                                )
                                 showingPasswordPopup.toggle()
                             } label: {
                                 Image(systemName: "checkmark")

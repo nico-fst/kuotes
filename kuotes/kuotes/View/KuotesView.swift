@@ -10,26 +10,54 @@ import SwiftUI
 
 struct KuotesView: View {
     @Binding var pendingKuoteID: String?
-    @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath: String = ""
+    @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath:
+        String = ""
     @Environment(\.modelContext) private var modelContext
-    @Query private var kuotes: [Kuote]
+    @Query(sort: \Kuote.pageno) private var kuotes: [Kuote]
     @State private var selectedKuote: Kuote? = nil
     @State private var vm: KuotesViewModel? = nil  // async mit modelContext befüllt
+    @EnvironmentObject var filterVM: FilterHeaderViewModel  // in ContentView einmalig instanziiert
+    
+    var filteredKuotes: [Kuote] {
+        kuotes.filter { kuote in
+            (filterVM.selectedColorFilter.isEmpty
+                || filterVM.selectedColorFilter.contains(kuote.color))
+                && (filterVM.selectedDrawerFilter.isEmpty
+                    || filterVM.selectedDrawerFilter.contains(kuote.drawer))
+        }
+    }
+    
+    var bookNames: [String] {
+        // Array(Set()) makes unique
+        Array(Set(filteredKuotes.map { $0.fileItem.displayName })).sorted()
+    }
 
     var body: some View {
         NavigationStack {
+            FilterHeader()
+                .padding()
+
             List {
-                ForEach(kuotes) { kuote in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(kuote.fileItem.displayName)
-                            .fontWeight(.bold)
-                        Text(kuote.chapter)
-                            .italic()
-                        Text(kuote.text)
-                            .lineLimit(2)
-                    }
-                    .onTapGesture {
-                        selectedKuote = kuote
+                NavigationLink(
+                    destination: BookKuotesView(
+                        bookName: "All Books",
+                        kuotes: filteredKuotes,
+                        selectedKuote: $selectedKuote
+                    )
+                ) {
+                    Text("All Books")
+                        .bold()
+                }
+
+                ForEach(bookNames, id: \.self) { bookName in
+                    NavigationLink(bookName) {
+                        BookKuotesView(
+                            bookName: bookName,
+                            kuotes: filteredKuotes.filter {
+                                $0.fileItem.displayName == bookName
+                            },
+                            selectedKuote: $selectedKuote
+                        )
                     }
                 }
             }

@@ -12,6 +12,11 @@ import SwiftData
 struct kuotesApp: App {
     @State private var pendingQuoteID: String? = nil
     
+    // @Published vars in ObservableObject...
+    // hier als @StateObject instanziieren und als .environmentObject injizieren...
+    // ...dann überall selbe Instanz in Kindern als @EnvironmentObject aufrufbar
+    @StateObject private var filterVM = FilterHeaderViewModel()
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Kuote.self, Folder.self])
         let modelConfiguration = ModelConfiguration(
@@ -33,6 +38,7 @@ struct kuotesApp: App {
             // .modelContainer: inject Container in Environment-Tree => alle Views haben Zugriff auf DB
             // ginge auch .modelContainer(for: [Folder.self]
             ContentView(pendingQuoteID: $pendingQuoteID)
+                .environmentObject(filterVM)
                 .modelContainer(sharedModelContainer)
                 .onOpenURL { url in
                     if url.scheme == "kuotes",

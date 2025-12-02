@@ -13,9 +13,11 @@ struct SharedModelConfig {
         Schema([Kuote.self, Folder.self])
     }
     static var config: ModelConfiguration {
-        let url = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.de.nicostern.kuotes")!
-            .appendingPathComponent("kuotes.sqlite")
-        
+        let url = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: "group.de.nicostern.kuotes"
+        )!
+        .appendingPathComponent("kuotes.sqlite")
+
         return ModelConfiguration(
             schema: schema,
             url: url
@@ -30,4 +32,4 @@ extension SharedModelConfig {
             configurations: [config]
         )
     }()
-} 
+}
