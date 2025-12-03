@@ -29,4 +29,6 @@ struct ContentView: View {
 #Preview {
     ContentView(pendingQuoteID: .constant(nil))
         .modelContainer(for: [Folder.self, Kuote.self], inMemory: true)
+        .environmentObject(FilterHeaderViewModel())
+        .environmentObject(NavigationViewModel())
 }

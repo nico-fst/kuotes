@@ -13,8 +13,6 @@ class FilterHeaderViewModel: ObservableObject {
     @Published var selectedColorFilter: Set<ColorType> = []
     @Published var selectedDrawerFilter: Set<DrawerType> = []
     
-    @EnvironmentObject var filterVM: FilterHeaderViewModel  // in ContentView einmalig instanziiert
-    
     func toggleColor(_ color: ColorType) {
         if selectedColorFilter.contains(color) {
             selectedColorFilter.remove(color)
