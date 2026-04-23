@@ -11,13 +11,7 @@ import SwiftData
 import SwiftUI
 
 class FolderViewModel: ObservableObject {
-    private var modelContext: ModelContext
-
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-
-    func reloadFolders() async {
+    func reloadFolders(ctx modelContext: ModelContext) async {
         do {
             // alte folder löschen
             let oldFolders = try modelContext.fetch(FetchDescriptor<Folder>())

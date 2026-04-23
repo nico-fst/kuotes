@@ -17,6 +17,8 @@ struct kuotesApp: App {
     // ...dann überall selbe Instanz in Kindern als @EnvironmentObject aufrufbar
     @StateObject private var filterVM = FilterHeaderViewModel()
     @StateObject private var navVM = NavigationViewModel()
+    @StateObject private var vm = KuotesViewModel()
+    @StateObject private var folderVM = FolderViewModel()
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Kuote.self, Folder.self])
@@ -47,6 +49,8 @@ struct kuotesApp: App {
             ContentView(pendingQuoteID: $pendingQuoteID)
                 .environmentObject(filterVM)
                 .environmentObject(navVM)
+                .environmentObject(vm)
+                .environmentObject(folderVM)
                 .modelContainer(sharedModelContainer)
                 .onOpenURL { url in
                     if url.scheme == "kuotes",

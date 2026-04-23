@@ -11,15 +11,10 @@ import SwiftData
 import SwiftUI
 
 class KuotesViewModel: ObservableObject {
-    private var modelContext: ModelContext
     @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath:
         String = ""
 
-    init(modelContext: ModelContext) {
-        self.modelContext = modelContext
-    }
-
-    func reloadKuotes() async {
+    func reloadKuotes(ctx modelContext: ModelContext) async {
         do {
             //  alte Kuotes löschen
             let oldKuotes = try modelContext.fetch(FetchDescriptor<Kuote>())
@@ -41,9 +36,9 @@ class KuotesViewModel: ObservableObject {
     /// Retrieves a Kuote object by its string ID.
     /// - Parameter id: The string representation of the Kuote's UUID.
     /// - Returns: A Kuote object if found, otherwise nil.
-    func getKuote(id: String) -> Kuote? {
+    func getKuote(ctx modelContext: ModelContext, id: String) -> Kuote? {
         do {
-            let kuotes = try self.modelContext.fetch(FetchDescriptor<Kuote>())  // weil nicht direkt Zugriff auf @Query
+            let kuotes = try modelContext.fetch(FetchDescriptor<Kuote>())  // weil nicht direkt Zugriff auf @Query
             if let uuid = UUID(uuidString: id) {
                 if let match = kuotes.first(where: { $0.id == uuid }) {
                     return match

@@ -75,8 +75,8 @@ extension Kuote {
         Kuote(
             datetime: Date(),
             fileItem: FileItem(
-                name: "Atomic Habits.sdr.json",
-                displayName: "Atomic Habits",
+                name: "Atomic_Habits_-_James_Clear.sdr.json",
+                displayName: "Atomic Habits - James Clear",
                 href: URL(
                     string:
                         "/Documents/Bastian%20Sick%20-%20Dativ%20ist%20dem%20Genitiv%20sein%20Tod.sdr.json"
@@ -96,9 +96,9 @@ extension Kuote {
             datetime: Date(),
             fileItem: FileItem(
                 name:
-                    "Bastian Sick - Der Dativ ist dem Genitiv sein Tod.sdr.json",
+                    "Der_Dativ_ist_dem_Genitiv_sein_Tod_-_Bastian_Sick.sdr.json",
                 displayName:
-                    "Bastian Sick - Der Dativ ist dem Genitiv sein Tod",
+                    "Der Dativ ist dem Genitiv sein Tod - Bastian Sick",
                 href: URL(
                     string:
                         "/Documents/Bastian%20Sick%20-%20Dativ%20ist%20dem%20Genitiv%20sein%20Tod.sdr.json"
@@ -118,9 +118,9 @@ extension Kuote {
             datetime: Date(),
             fileItem: FileItem(
                 name:
-                    "Bastian Sick - Der Dativ ist dem Genitiv sein Tod.sdr.json",
+                    "Der_Dativ_ist_dem_Genitiv_sein_Tod_-_Bastian_Sick.sdr.json",
                 displayName:
-                    "Bastian Sick - Der Dativ ist dem Genitiv sein Tod",
+                    "Der Dativ ist dem Genitiv sein Tod - Bastian Sick",
                 href: URL(
                     string:
                         "/Documents/Bastian%20Sick%20-%20Dativ%20ist%20dem%20Genitiv%20sein%20Tod.sdr.json"

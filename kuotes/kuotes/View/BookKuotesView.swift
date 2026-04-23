@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct BookKuotesView: View {
     var bookName: String
     var kuotes: [Kuote]
     @Binding var selectedKuote: Kuote?
+    
+    @Environment(\.modelContext) private var ctx
     @EnvironmentObject private var filterVM: FilterHeaderViewModel
+    @EnvironmentObject private var vm: KuotesViewModel
 
     enum SortOrder: String, CaseIterable, Identifiable {
         case ascending = "Ascending"
@@ -87,6 +91,7 @@ struct BookKuotesView: View {
                 }
             }
         }
+        .refreshable { await vm.reloadKuotes(ctx: ctx) }
         .navigationTitle(bookName)
         .safeAreaInset(edge: .bottom) {
             Color.clear.frame(height: 140)
@@ -101,4 +106,5 @@ struct BookKuotesView: View {
         selectedKuote: .constant(.templateLong),
     )
     .environmentObject(FilterHeaderViewModel())
+    .environmentObject(KuotesViewModel())
 }

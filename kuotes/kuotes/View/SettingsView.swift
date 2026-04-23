@@ -8,19 +8,36 @@
 import Combine
 import SwiftUI
 
+enum NamingConventionOrder: String, CaseIterable, Identifiable {
+    case authorFirst = "Author first"
+    case titleFirst = "Title first"
+    case mixed = "Mixed"
+
+    var id: String { rawValue }
+}
+
 struct SettingsView: View {
     // AppStorage ist Wrapper um UserDefaults - auslesbar auf Festplatte
     @AppStorage("webdavURL") var webdavURL: String = ""
     @AppStorage("webdavUsername") var webdavUsername: String = ""
     @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath:
         String = ""
+    @AppStorage("namingConventionOrder") private var namingConventionOrderRaw: String = NamingConventionOrder.titleFirst.rawValue
+    @AppStorage("namingConventionSeparator") private var namingConventionSeparator: String = ""
+
+    // Umweg, weil in UserDefaults nur primitive Datentypen speicherbar
+    var namingConventionOrder: NamingConventionOrder {
+        get { NamingConventionOrder(rawValue: namingConventionOrderRaw) ?? .titleFirst }
+        set { namingConventionOrderRaw = newValue.rawValue }
+    }
+
     @State private var showingPasswordPopup = false
     @State private var tempPassword: String = ""
 
     var body: some View {
         NavigationStack {
             Form {
-                Section(header: Text("WebDAV Connection")) {
+                Section("WebDAV Connection") {
                     TextField(
                         "URL (lead by https://, without trailing '/')",
                         text: $webdavURL
@@ -43,6 +60,32 @@ struct SettingsView: View {
 
                     Button("Change WebDAV Password") {
                         showingPasswordPopup.toggle()
+                    }
+                }
+                
+                Section("Naming Convention") {Picker("Order", selection: $namingConventionOrderRaw) {
+                        ForEach(NamingConventionOrder.allCases) { order in
+                            Text(order.rawValue).tag(order)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+                    
+                    if namingConventionOrder != .mixed {
+                        TextField("Separator (e.g. -)", text: $namingConventionSeparator)
+                    }
+                    
+                    if namingConventionOrder == .titleFirst {
+                        Text("Currently, Kuotes expects ALL books to be named like this: 'Title \(namingConventionSeparator) Author'")
+                            .font(.footnote)
+                            .foregroundStyle(.red)
+                    } else if namingConventionOrder == .authorFirst {
+                        Text("Currently, Kuotes expects ALL books to be named like this: 'Author \(namingConventionSeparator) Title'")
+                            .font(.footnote)
+                            .foregroundStyle(.red)
+                    } else {
+                        Text("Only toggle this when ALL your books follow the same naming convention")
+                            .font(.footnote)
+                            .foregroundStyle(.red)
                     }
                 }
             }

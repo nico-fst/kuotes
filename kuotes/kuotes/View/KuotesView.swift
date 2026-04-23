@@ -12,12 +12,23 @@ struct KuotesView: View {
     @Binding var pendingKuoteID: String?
     @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath:
         String = ""
-    @Environment(\.modelContext) private var modelContext
+    @AppStorage("namingConventionOrder") private var namingConventionOrderRaw: String = NamingConventionOrder.titleFirst.rawValue
+    @AppStorage("namingConventionSeparator") private var namingConventionSeparator: String = "-"
+    
+    // Umweg, weil in UserDefaults nur primitive Datentypen speicherbar
+    var namingConventionOrder: NamingConventionOrder {
+        get { NamingConventionOrder(rawValue: namingConventionOrderRaw) ?? .titleFirst }
+        set { namingConventionOrderRaw = newValue.rawValue }
+    }
+    
     @Query(sort: \Kuote.pageno) private var kuotes: [Kuote]
+    
     @State private var selectedKuote: Kuote? = nil
-    @State private var vm: KuotesViewModel? = nil  // async mit modelContext befüllt
+    
+    @Environment(\.modelContext) private var ctx
     @EnvironmentObject var filterVM: FilterHeaderViewModel  // in ContentView einmalig instanziiert
     @EnvironmentObject var navVM: NavigationViewModel // e.g. navVM.presentedBooks für NavigationStack
+    @EnvironmentObject private var vm: KuotesViewModel
 
     var filteredKuotes: [Kuote] {
         kuotes.filter { kuote in
@@ -41,8 +52,23 @@ struct KuotesView: View {
                         Text("All Books").bold()
                     }
                     ForEach(bookNames, id: \.self) { bookName in
+                        let parts = bookName.components(separatedBy: " - ")
+                        
                         NavigationLink(value: bookName) {
-                            Text(bookName)
+                            if namingConventionOrder == .mixed {
+                                Text(bookName)
+                            } else {
+                                let parts = bookName.components(separatedBy: " \(namingConventionSeparator) ")
+                                if parts.count == 2 {
+                                    TextLabeled(
+                                        namingConventionOrder == .titleFirst ? parts[1] : parts[0],
+                                        namingConventionOrder == .titleFirst ? parts[0] : parts[1],
+                                    )
+                                } else {
+                                    Text("ERROR: Book title does not follow naming convention set in Settings")
+                                        .foregroundStyle(.red)
+                                }
+                            }
                         }
                     }
                 }
@@ -63,12 +89,7 @@ struct KuotesView: View {
                         )
                     }
                 }
-                .task {  // weil @Environment bei Initializer oben noch nicht available wäre
-                    if vm == nil {
-                        vm = KuotesViewModel(modelContext: modelContext)
-                    }
-                }
-                .refreshable { await vm?.reloadKuotes() }
+                .refreshable { await vm.reloadKuotes(ctx: ctx) }
                 .navigationTitle("Kuotes")
                 .navigationSubtitle("Fetched from \(selectedKuotesFolderPath)")
                 .sheet(item: $selectedKuote) { kuote in
@@ -103,7 +124,7 @@ struct KuotesView: View {
             .onChange(of: pendingKuoteID) { _, newValue in
                 Task {
                     if let id = newValue {
-                        if let kuote = vm?.getKuote(id: id) {
+                        if let kuote = vm.getKuote(ctx: ctx, id: id) {
                             navVM.presentedBooks = [kuote.fileItem.displayName] // zugehörige Buchseite im NavStack öffnen
                             selectedKuote = kuote // Buch-Sheet öffnen
                             pendingKuoteID = nil
@@ -121,7 +142,30 @@ struct KuotesView: View {
     }
 }
 
-#Preview {
-    KuotesView(pendingKuoteID: .constant(nil))
-        .environmentObject(FilterHeaderViewModel())
+private struct KuotesView_PreviewContainer: View {
+    let container: ModelContainer
+
+    init() {
+        let config = ModelConfiguration(isStoredInMemoryOnly: true)
+        self.container = try! ModelContainer(for: Kuote.self, Folder.self, configurations: config)
+
+        // Insert mock data into the in-memory context
+        let longKuote = Kuote.templateLong
+        let shortKuote = Kuote.templateShort
+        let mediumKuote = Kuote.templateMedium
+        container.mainContext.insert(longKuote)
+        container.mainContext.insert(shortKuote)
+        container.mainContext.insert(mediumKuote)
+    }
+
+    var body: some View {
+        KuotesView(pendingKuoteID: .constant(nil))
+            .environmentObject(FilterHeaderViewModel())
+            .environmentObject(NavigationViewModel())
+            .modelContainer(container)
+    }
+}
+
+#Preview() {
+    KuotesView_PreviewContainer()
 }

@@ -11,9 +11,11 @@ import SwiftUI
 struct FolderView: View {
     @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath:
         String = ""
+    
     @Query private var folders: [Folder]
-    @Environment(\.modelContext) private var modelContext
-    @State private var vm: FolderViewModel? = nil // TODO auf oberster Ebene instanziieren
+    
+    @Environment(\.modelContext) private var ctx
+    @EnvironmentObject private var vm: FolderViewModel
 
     var body: some View {
         NavigationStack {
@@ -37,12 +39,7 @@ struct FolderView: View {
                     .foregroundColor(Color("AccentColor"))
                     .font(.footnote)
                 }
-                .task {  // weil @Environment bei Initializer oben noch nicht available wäre
-                    if vm == nil {
-                        vm = FolderViewModel(modelContext: modelContext)
-                    }
-                }
-                .refreshable { await vm?.reloadFolders() }
+                .refreshable { await vm.reloadFolders(ctx: ctx) }
                 .navigationTitle("Select Kuotes Folder")
                 .navigationSubtitle("Or set the absolute URL in Settings")
             }
@@ -52,4 +49,5 @@ struct FolderView: View {
 
 #Preview {
     FolderView()
+        .environmentObject(FolderViewModel())
 }

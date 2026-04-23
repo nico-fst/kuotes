@@ -213,10 +213,11 @@ class FetchServices {
                 href.lastPathComponent.removingPercentEncoding
                 ?? href.lastPathComponent
 
-            // ... und ohne Dateiendung
+            // ... und ohne Dateiendung, Underscores rauspatchen
             guard name.hasSuffix(".json") else { return nil }
-            let displayName =
+            let baseName =
                 name.split(separator: ".").first.map(String.init) ?? name
+            let displayName = baseName.replacingOccurrences(of: "_", with: " ")
 
             return FileItem(name: name, displayName: displayName, href: href)
         }
