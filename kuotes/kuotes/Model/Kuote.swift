@@ -87,7 +87,7 @@ extension Kuote {
             text:
                 "Every action you take is a vote for the type of person you wish to become.",
             drawer: .lighten,
-            color: .gray
+            color: .red
         )
     }
 

@@ -10,6 +10,7 @@ import SwiftUI
 
 struct ContentView: View {
     @Binding var pendingQuoteID: String?  // to be viewed when pressing widget
+    @EnvironmentObject var vm: KuotesViewModel
 
     var body: some View {
         TabView {
@@ -21,6 +22,14 @@ struct ContentView: View {
             }
             Tab("Settings", systemImage: "gearshape.fill") {
                 SettingsView()
+            }
+        }
+        .overlay {
+            if vm.reloadingKuotes {
+                ProgressView("Reloading Kuotes...")
+                    .padding()
+                    .background(.regularMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
             }
         }
     }

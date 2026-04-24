@@ -13,9 +13,14 @@ import SwiftUI
 class KuotesViewModel: ObservableObject {
     @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath:
         String = ""
+    @Published var reloadingKuotes: Bool = false
 
+    @MainActor
     func reloadKuotes(ctx modelContext: ModelContext) async {
         do {
+            reloadingKuotes = true
+            defer { reloadingKuotes = false }
+            
             //  alte Kuotes löschen
             let oldKuotes = try modelContext.fetch(FetchDescriptor<Kuote>())
             for kuote in oldKuotes { modelContext.delete(kuote) }

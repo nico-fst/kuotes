@@ -10,7 +10,7 @@ import SwiftUI
 
 struct FilterHeader: View {
     @Query(sort: \Kuote.pageno) private var kuotes: [Kuote]
-    @EnvironmentObject var filterVM: FilterHeaderViewModel  // in ContentView einmalig instanziiert
+    @EnvironmentObject var filterVM: FilterHeaderViewModel
 
     private var filterString: String? {
         let colorCount = filterVM.selectedColorFilter.count
@@ -59,62 +59,13 @@ struct FilterHeader: View {
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(DrawerType.allCases, id: \.self) { type in
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    filterVM.toggleDrawer(type)
-                                }
-                            }) {
-                                Text(type.rawValue)
-                                    .padding(13)
-                                    .foregroundStyle(
-                                        Color("AccentColor").opacity(0.9)
-                                    )
-                            }
-                            .sensoryFeedback(
-                                .selection,
-                                trigger: filterVM.selectedDrawerFilter
-                            )
-                            .glassEffect(
-                                .regular.tint(
-                                    filterVM.selectedDrawerFilter.contains(type)
-                                        ? Color("AccentColor").opacity(0.35)
-                                        : Color("AccentColor").opacity(0.1)
-                                ).interactive()
-                            )
-                        }
+                        DrawerPickers(selectedDrawer: $filterVM.selectedDrawerFilter, allowMulti: true)
                     }
                 }
 
                 ScrollView(.horizontal, showsIndicators: false) {
                     HStack {
-                        ForEach(ColorType.allCases, id: \.self) { type in  // id weil muss für ForEach zu Identifiable konform
-                            Button(action: {
-                                withAnimation(.easeInOut(duration: 0.2)) {
-                                    filterVM.toggleColor(type)
-                                }
-                            }) {
-                                Text("●")
-                                    .font(.title2)
-                                    .frame(width: 48, height: 48)
-                                    .foregroundStyle(
-                                        filterVM.selectedColorFilter.contains(type)
-                                        ? type.swiftUIColor
-                                        : type.swiftUIColor.opacity(0.3)
-                                    )
-                            }
-                            .sensoryFeedback(
-                                .selection,
-                                trigger: filterVM.selectedColorFilter
-                            )
-                            .glassEffect(
-                                .regular.tint(
-                                    filterVM.selectedColorFilter.contains(type)
-                                        ? type.swiftUIColor.opacity(0.35)
-                                        : type.swiftUIColor.opacity(0.1)
-                                ).interactive()
-                            )
-                        }
+                        ColorPickers(selectedColor: $filterVM.selectedColorFilter, allowMulti: true)
                     }
                 }
             }
