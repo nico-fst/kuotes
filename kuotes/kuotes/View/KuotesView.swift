@@ -52,7 +52,7 @@ struct KuotesView: View {
                     NavigationLink(value: "All Books") {
                         Text("All Books")
                             .bold()
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(.accent)
                     }
                     ForEach(bookNames, id: \.self) { bookName in
                         NavigationLink(value: bookName) {

@@ -23,7 +23,11 @@ struct BookKuotesView: View {
 
         var id: String { rawValue }
     }
+    
     @State private var sortOrder: SortOrder = .ascending
+    
+    @State private var didDeleteKuote: Bool = false
+    @State private var deleteError: String? = nil
 
     enum SortCriterium: String, CaseIterable, Identifiable {
         case page = "Page"
@@ -88,11 +92,49 @@ struct BookKuotesView: View {
                     .onTapGesture {
                         selectedKuote = kuote
                     }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        Button(role: .destructive) {
+                            Task {
+                                do {
+                                    let found = try await FetchServices.shared.deleteHighlight(for: kuote)
+                                    if !found {
+                                        deleteError = "Kuote to be deleted could not be found"
+                                    } else {
+                                        didDeleteKuote = true
+                                    }
+                                } catch {
+                                    deleteError = error.localizedDescription
+                                }
+                            }
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
+            }
+        }
+        .onDisappear {
+            guard didDeleteKuote else { return }
+            Task {
+                await vm.reloadKuotes(ctx: ctx)
             }
         }
         .refreshable { await vm.reloadKuotes(ctx: ctx) }
         .navigationTitle(bookName)
+        .alert("Delete failed", isPresented: Binding(
+            get: { deleteError != nil },
+            set: { isPresented in
+                if !isPresented {
+                    deleteError = nil
+                }
+            }
+        )) {
+            Button("OK", role: .cancel) {
+                deleteError = nil
+            }
+        } message: {
+            Text(deleteError ?? "An unknown error occurred.")
+        }
         .safeAreaInset(edge: .bottom) {
             Color.clear.frame(height: 140)
         }

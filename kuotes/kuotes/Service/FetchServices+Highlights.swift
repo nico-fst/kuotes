@@ -52,6 +52,24 @@ extension FetchServices {
         }
     }
 
+    /// Deletes a single highlight from its source JSON file.
+    /// - Parameter kuote: The kuote whose highlight should be deleted.
+    /// - Returns: `true` if a matching highlight was found and deleted, otherwise `false`.
+    func deleteHighlight(for kuote: Kuote) async throws -> Bool {
+        var highlights: [HighlightFileEntry] = try await fetchJSON(
+            from: kuote.fileItem.href.absoluteString
+        )
+
+        guard let highlightIndex = indexOfHighlight(for: kuote, in: highlights)
+        else {
+            return false
+        }
+
+        highlights.remove(at: highlightIndex)
+        try await putJSON(highlights, to: kuote.fileItem.href.absoluteString)
+        return true
+    }
+
     private func updateHighlight(
         for kuote: Kuote,
         applyChange: (inout HighlightFileEntry) -> Bool
@@ -60,14 +78,7 @@ extension FetchServices {
             from: kuote.fileItem.href.absoluteString
         )
 
-        let kuoteTimestamp = highlightTimestampFormatter.string(from: kuote.datetime)
-        guard
-            let highlightIndex = highlights.firstIndex(where: {
-                $0.datetime == kuoteTimestamp
-                    && $0.chapter == kuote.chapter
-                    && $0.text == kuote.text
-                    && $0.pageno == kuote.pageno
-            })
+        guard let highlightIndex = indexOfHighlight(for: kuote, in: highlights)
         else {
             return false
         }
@@ -80,6 +91,19 @@ extension FetchServices {
 
         try await putJSON(highlights, to: kuote.fileItem.href.absoluteString)
         return true
+    }
+
+    private func indexOfHighlight(
+        for kuote: Kuote,
+        in highlights: [HighlightFileEntry]
+    ) -> Int? {
+        let kuoteTimestamp = highlightTimestampFormatter.string(from: kuote.datetime)
+        return highlights.firstIndex {
+            $0.datetime == kuoteTimestamp
+                && $0.chapter == kuote.chapter
+                && $0.text == kuote.text
+                && $0.pageno == kuote.pageno
+        }
     }
 
     private func mappedHighlightDrawerName(for drawer: DrawerType) -> String {
