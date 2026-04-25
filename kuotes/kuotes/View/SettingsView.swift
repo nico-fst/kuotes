@@ -62,6 +62,7 @@ struct SettingsView: View {
                         showingPasswordPopup.toggle()
                     }
                 }
+                .listRowBackground(Color(.secondarySystemGroupedBackground).opacity(0.3))
                 
                 Section("Naming Convention") {Picker("Order", selection: $namingConventionOrderRaw) {
                         ForEach(NamingConventionOrder.allCases) { order in
@@ -88,7 +89,10 @@ struct SettingsView: View {
                             .foregroundStyle(.red)
                     }
                 }
+                .listRowBackground(Color(.secondarySystemGroupedBackground).opacity(0.3))
             }
+            .scrollContentBackground(.hidden)
+            .background(.kBackground)
             .navigationTitle("Settings")
             .sheet(isPresented: $showingPasswordPopup) {
                 NavigationStack {

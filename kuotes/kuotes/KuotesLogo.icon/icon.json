@@ -4,7 +4,15 @@
   },
   "groups" : [
     {
-      "blend-mode" : "normal",
+      "blend-mode-specializations" : [
+        {
+          "value" : "normal"
+        },
+        {
+          "appearance" : "dark",
+          "value" : "plus-lighter"
+        }
+      ],
       "blur-material" : null,
       "layers" : [
         {
@@ -79,6 +87,7 @@
               }
             }
           ],
+          "hidden" : false,
           "image-name" : "kuotes_logo_subject.png",
           "name" : "kuotes_logo_subject",
           "opacity-specializations" : [
@@ -100,13 +109,19 @@
         }
       ],
       "name" : "subject",
+      "opacity-specializations" : [
+        {
+          "appearance" : "dark",
+          "value" : 1
+        }
+      ],
       "shadow" : {
         "kind" : "layer-color",
         "opacity" : 1
       },
       "translucency" : {
         "enabled" : true,
-        "value" : 0.5
+        "value" : 1
       }
     },
     {
@@ -134,7 +149,22 @@
             },
             {
               "appearance" : "dark",
-              "value" : "none"
+              "value" : {
+                "linear-gradient" : [
+                  "display-p3:0.21961,0.22353,0.50000,1.00000",
+                  "display-p3:0.12311,0.13548,0.19180,1.00000"
+                ],
+                "orientation" : {
+                  "start" : {
+                    "x" : 0.5,
+                    "y" : 0
+                  },
+                  "stop" : {
+                    "x" : 0.5,
+                    "y" : 0.7
+                  }
+                }
+              }
             }
           ],
           "glass" : true,

@@ -27,6 +27,8 @@ struct KuotesView: View {
     @State private var selectedKuoteWasChanged = false
     
     @Environment(\.modelContext) private var ctx
+    @Environment(\.colorScheme) private var colorScheme
+    
     @EnvironmentObject var filterVM: FilterHeaderViewModel  // in ContentView einmalig instanziiert
     @EnvironmentObject var navVM: NavigationViewModel // e.g. navVM.presentedBooks für NavigationStack
     @EnvironmentObject var vm: KuotesViewModel
@@ -54,6 +56,7 @@ struct KuotesView: View {
                             .bold()
                             .foregroundStyle(.accent)
                     }
+                    .listRowBackground(Color(.secondarySystemGroupedBackground).opacity(0.3))
                     ForEach(bookNames, id: \.self) { bookName in
                         NavigationLink(value: bookName) {
                             BookRow(
@@ -62,8 +65,11 @@ struct KuotesView: View {
                                 separator: namingConventionSeparator
                             )
                         }
+                        .listRowBackground(Color(.secondarySystemGroupedBackground).opacity(0.3))
                     }
                 }
+                .scrollContentBackground(.hidden)
+                .background(.kBackground)
                 .navigationDestination(for: String.self) { bookName in
                     if bookName == "All Books" {
                         BookKuotesView(
@@ -110,7 +116,7 @@ struct KuotesView: View {
             }
 
             FilterHeader()
-                .background(.ultraThinMaterial)
+                .background(.regularMaterial)
                 .cornerRadius(40)
                 .padding()
                 .padding(.horizontal, 15)
@@ -297,4 +303,3 @@ private struct KuotesView_PreviewContainer: View {
 #Preview() {
     KuotesView_PreviewContainer()
 }
-

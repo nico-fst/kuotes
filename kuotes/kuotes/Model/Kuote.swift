@@ -109,7 +109,7 @@ extension Kuote {
             text:
                 "Liest man in der Sauna den Hinweis »Kein Schweiß aufs Holz«, so brennt es einem in den Augen. Ebenso beim Anblick von Läden, die »Alles für's Kind« anbieten. Zwar ist der Apostroph hier überflüssig, aber immerhin scheint sich der Schildermaler noch was dabei gedacht zu haben.",
             drawer: .lighten,
-            color: .gray
+            color: .green
         )
     }
 

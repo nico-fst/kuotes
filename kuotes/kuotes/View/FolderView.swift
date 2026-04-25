@@ -32,13 +32,17 @@ struct FolderView: View {
                         } label: {
                             Text(folder.name)
                         }
+                        .listRowBackground(Color(.secondarySystemGroupedBackground).opacity(0.3))
                     }
                     Text(
                         "Only the top-level folder will be listed here. Set the URL manually when using a subfolder or no folder is listed here."
                     )
                     .foregroundColor(Color("AccentColor"))
                     .font(.footnote)
+                    .listRowBackground(Color(.secondarySystemGroupedBackground).opacity(0.3))
                 }
+                .scrollContentBackground(.hidden)
+                .background(.kBackground)
                 .refreshable { await vm.reloadFolders(ctx: ctx) }
                 .navigationTitle("Select Kuotes Folder")
                 .navigationSubtitle("Or set the absolute URL in Settings")

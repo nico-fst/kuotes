@@ -73,46 +73,43 @@ struct BookKuotesView: View {
                 }
                 .pickerStyle(.segmented)
             }
+            .listRowBackground(Color.clear)
+            .listRowSeparator(.hidden)
 
             Section {
                 ForEach(sortedKuotes) { kuote in
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(kuote.fileItem.displayName)
-                            .fontWeight(.bold)
-                        Text(kuote.chapter)
-                            .italic()
-                        Text(kuote.text)
-                            .lineLimit(2)
-                        Text(
-                            "Added \(kuote.datetime.formatted(.dateTime.year().month().day().hour().minute())) on page \(kuote.pageno)"
-                        )
-                        .font(.footnote)
-                    }
-                    .sensoryFeedback(.selection, trigger: selectedKuote)
-                    .onTapGesture {
-                        selectedKuote = kuote
-                    }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        Button(role: .destructive) {
-                            Task {
-                                do {
-                                    let found = try await FetchServices.shared.deleteHighlight(for: kuote)
-                                    if !found {
-                                        deleteError = "Kuote to be deleted could not be found"
-                                    } else {
-                                        didDeleteKuote = true
-                                    }
-                                } catch {
-                                    deleteError = error.localizedDescription
-                                }
-                            }
-                        } label: {
-                            Label("Delete", systemImage: "trash")
+                    KuoteCard(kuote: kuote)
+                        .listRowSeparator(.hidden)
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
+                        .sensoryFeedback(.selection, trigger: selectedKuote)
+                        .onTapGesture {
+                            selectedKuote = kuote
                         }
-                    }
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                            Button(role: .destructive) {
+                                Task {
+                                    do {
+                                        let found = try await FetchServices.shared.deleteHighlight(for: kuote)
+                                        if !found {
+                                            deleteError = "Kuote to be deleted could not be found"
+                                        } else {
+                                            didDeleteKuote = true
+                                        }
+                                    } catch {
+                                        deleteError = error.localizedDescription
+                                    }
+                                }
+                            } label: {
+                                Label("Delete", systemImage: "trash")
+                            }
+                        }
                 }
             }
         }
+        .listStyle(.plain)
+        .background(.kBackground)
+        .listRowBackground(Color.clear)
         .onDisappear {
             guard didDeleteKuote else { return }
             Task {
@@ -137,6 +134,56 @@ struct BookKuotesView: View {
         }
         .safeAreaInset(edge: .bottom) {
             Color.clear.frame(height: 140)
+        }
+    }
+    
+    private struct KuoteCard: View {
+        let kuote: Kuote
+        @Environment(\.colorScheme) private var colorScheme
+        
+        var body: some View {
+            ZStack(alignment: .topTrailing) {
+                VStack(alignment: .leading) {
+                    Text(kuote.fileItem.displayName)
+                        .frame(width: UIScreen.main.bounds.width * 0.7, alignment: .leading) // nicht in die Anführungszeichen reinragen
+                    Text("page \(kuote.pageno) ⋅ \(kuote.chapter)")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                        .frame(width: UIScreen.main.bounds.width * 0.7, alignment: .leading) // nicht in die Anführungszeichen reinragen
+                    Text(kuote.text)
+                        .lineLimit(2)
+                        .padding(.vertical, 8)
+                        .font(.system(.body, design: .serif))
+                        .bold()
+                    Text(
+                        "\(kuote.datetime.formatted(.dateTime.year().month().day().hour().minute()))"
+                    )
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                }
+                .padding(18)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(
+                    colorScheme == .dark
+                        ? kuote.color.swiftUIColor.opacity(0.2)
+                        : kuote.color.swiftUIColor.opacity(0.3),
+                    in: RoundedRectangle(cornerRadius: 32)
+                )
+                .shadow(color: kuote.color.swiftUIColor, radius: 16, x: 0, y: 8)
+                .overlay {
+                    RoundedRectangle(cornerRadius: 32)
+                        .stroke(
+                            .white.opacity(0.2),
+                            lineWidth: colorScheme == .dark ? 1 : 3)
+                }
+                
+                Text("❞")
+                    .font(.system(size: 50, weight: .bold))
+                    .foregroundColor(.white)
+                    .opacity(0.3)
+                    .frame(width: 75, height: 75)
+            }
         }
     }
 }

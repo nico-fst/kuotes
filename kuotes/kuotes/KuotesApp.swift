@@ -44,24 +44,29 @@ struct kuotesApp: App {
 
     var body: some Scene {
         WindowGroup {
-            // .modelContainer: inject Container in Environment-Tree => alle Views haben Zugriff auf DB
-            // ginge auch .modelContainer(for: [Folder.self]
-            ContentView(pendingQuoteID: $pendingQuoteID)
-                .environmentObject(filterVM)
-                .environmentObject(navVM)
-                .environmentObject(vm)
-                .environmentObject(folderVM)
-                .modelContainer(sharedModelContainer)
-                .onOpenURL { url in
-                    if url.scheme == "kuotes",
-                        url.host == "kuote",
-                        url.pathComponents.count > 1
-                    {
-                        let quoteID = url.pathComponents[1]
-                        pendingQuoteID = quoteID
-                        // navVM.presentedBooks wird in KuotesView geändert mit .onChange
+            ZStack {
+                Color(.kBackground)
+                    .ignoresSafeArea()
+                
+                // .modelContainer: inject Container in Environment-Tree => alle Views haben Zugriff auf DB
+                // ginge auch .modelContainer(for: [Folder.self]
+                ContentView(pendingQuoteID: $pendingQuoteID)
+                    .environmentObject(filterVM)
+                    .environmentObject(navVM)
+                    .environmentObject(vm)
+                    .environmentObject(folderVM)
+                    .modelContainer(sharedModelContainer)
+                    .onOpenURL { url in
+                        if url.scheme == "kuotes",
+                           url.host == "kuote",
+                           url.pathComponents.count > 1
+                        {
+                            let quoteID = url.pathComponents[1]
+                            pendingQuoteID = quoteID
+                            // navVM.presentedBooks wird in KuotesView geändert mit .onChange
+                        }
                     }
-                }
+            }
         }
     }
 }
