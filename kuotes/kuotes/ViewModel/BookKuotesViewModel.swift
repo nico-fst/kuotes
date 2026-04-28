@@ -34,6 +34,8 @@ class BookKuotesViewModel: ObservableObject {
     @Published var showFloatingEffect: Bool = false
     @Published var closingSelectedKuoteID: UUID? = nil
     
+    @Published var searchText: String = ""
+    
     func sortedKuotes(_ kuotes: [Kuote]) -> [Kuote] {
         switch sortOrder {
         case .ascending:
@@ -50,6 +52,20 @@ class BookKuotesViewModel: ObservableObject {
             case .date:
                 return kuotes.sorted { $0.datetime > $1.datetime }
             }
+        }
+    }
+    
+    
+    func searchedKuotes(_ kuotes: [Kuote]) -> [Kuote] {
+        let sortedKuotes = sortedKuotes(kuotes)
+        
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return sortedKuotes }
+        
+        return sortedKuotes.filter { kuote in
+            kuote.text.localizedCaseInsensitiveContains(query)
+            || kuote.fileItem.displayName.localizedStandardContains(query)
+            || String(kuote.pageno).localizedCaseInsensitiveContains(query)
         }
     }
 

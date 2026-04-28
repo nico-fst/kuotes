@@ -83,7 +83,7 @@ struct BookKuotesView: View {
             .listRowSeparator(.hidden)
 
             Section {
-                ForEach(bookVM.sortedKuotes(kuotes)) { kuote in
+                ForEach(bookVM.searchedKuotes(kuotes)) { kuote in
                     let isHidden = bookVM.isRowHidden(
                         kuoteID: kuote.id,
                         selectedKuoteID: selectedKuote?.id
@@ -130,6 +130,11 @@ struct BookKuotesView: View {
         }
         .refreshable { await vm.reloadKuotes(ctx: ctx) }
         .navigationTitle(bookName)
+        .searchable(
+            text: $bookVM.searchText,
+            placement: .automatic,
+            prompt: "Search Kuotes"
+        )
         .alert("Delete failed", isPresented: Binding(
             get: { bookVM.deleteError != nil },
             set: { isPresented in
@@ -219,9 +224,18 @@ struct BookKuotesView: View {
     
 }
 
+#Preview("Not Selected") {
+    BookKuotesView(
+        selectedKuote: .constant(nil),
+        bookName: "Atomic Habits",
+        kuotes: [.templateLong, .templateMedium, .templateShort],
+    )
+    .environmentObject(FilterHeaderViewModel())
+    .environmentObject(KuotesViewModel())
+    .environmentObject(BookKuotesViewModel())
+}
 
-
-#Preview {
+#Preview("Selected") {
     BookKuotesView(
         selectedKuote: .constant(.templateLong),
         bookName: "Atomic Habits",

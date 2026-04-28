@@ -11,14 +11,20 @@ import SwiftUI
 struct ContentView: View {
     @Binding var pendingQuoteID: String?  // to be viewed when pressing widget
     @EnvironmentObject var vm: KuotesViewModel
+    @EnvironmentObject var bookVM: BookKuotesViewModel
 
     var body: some View {
         TabView {
             Tab("Kuotes", systemImage: "quote.bubble.fill") {
                 KuotesView(pendingKuoteID: $pendingQuoteID)
             }
+            
             Tab("Settings", systemImage: "gearshape.fill") {
                 SettingsView()
+            }
+            
+            Tab(role: .search) {
+                SearchView()
             }
         }
         .overlay {
@@ -37,4 +43,5 @@ struct ContentView: View {
         .modelContainer(for: [Folder.self, Kuote.self], inMemory: true)
         .environmentObject(FilterHeaderViewModel())
         .environmentObject(NavigationViewModel())
+        .environmentObject(BookKuotesViewModel())
 }
