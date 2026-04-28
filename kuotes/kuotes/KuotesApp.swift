@@ -19,6 +19,7 @@ struct kuotesApp: App {
     @StateObject private var navVM = NavigationViewModel()
     @StateObject private var vm = KuotesViewModel()
     @StateObject private var folderVM = FolderViewModel()
+    @StateObject private var bookVM = BookKuotesViewModel()
 
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([Kuote.self, Folder.self])
@@ -55,6 +56,7 @@ struct kuotesApp: App {
                     .environmentObject(navVM)
                     .environmentObject(vm)
                     .environmentObject(folderVM)
+                    .environmentObject(bookVM)
                     .modelContainer(sharedModelContainer)
                     .onOpenURL { url in
                         if url.scheme == "kuotes",

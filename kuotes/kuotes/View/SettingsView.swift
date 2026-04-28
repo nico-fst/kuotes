@@ -33,38 +33,40 @@ struct SettingsView: View {
 
     @State private var showingPasswordPopup = false
     @State private var tempPassword: String = ""
+    
+    @State private var showFolderSheet = false
+    @Namespace private var folderTransition
+    
 
     var body: some View {
         NavigationStack {
             Form {
-                Section("WebDAV Connection") {
-                    TextField(
-                        "URL (lead by https://, without trailing '/')",
-                        text: $webdavURL
-                    )
-                    .keyboardType(.URL)
-                    .autocapitalization(.none)
-                    TextField("Username", text: $webdavUsername)
+                Section() {
+                    TextFieldLabeled("URL", $webdavURL, "lead by https://, without trailing '/'")
+                        .keyboardType(.URL)
+                        .autocapitalization(.none)
+                    
+                    TextFieldLabeled("Username", $webdavUsername, "some@email.com")
                         .autocapitalization(.none)
 
-                    TextField(
-                        "(Optional: Hardcode path/to/folder",
-                        text: $selectedKuotesFolderPath
+                    TextFieldLabeled(
+                        "Folder of Kuotes",
+                        $selectedKuotesFolderPath,
+                        "(Optional to hardcode path/to/folder)"
                     )
-
-                    Text(
-                        "webdavURL: \(webdavURL) \nwebdavUsername: \(webdavUsername)\nselectedKuotesFolderPath: \(selectedKuotesFolderPath)"
-                    )
-                    .font(.footnote)
-                    .opacity(0.3)
 
                     Button("Change WebDAV Password") {
                         showingPasswordPopup.toggle()
                     }
+                } header: {
+                    Text("WebDAV Connection")
+                } footer: {
+                    Text("webdavURL: \(webdavURL) \nwebdavUsername: \(webdavUsername)\nselectedKuotesFolderPath: \(selectedKuotesFolderPath)")
                 }
                 .listRowBackground(Color(.secondarySystemGroupedBackground).opacity(0.3))
                 
-                Section("Naming Convention") {Picker("Order", selection: $namingConventionOrderRaw) {
+                Section() {
+                    Picker("Order", selection: $namingConventionOrderRaw) {
                         ForEach(NamingConventionOrder.allCases) { order in
                             Text(order.rawValue).tag(order)
                         }
@@ -74,19 +76,18 @@ struct SettingsView: View {
                     if namingConventionOrder != .mixed {
                         TextField("Separator (e.g. -)", text: $namingConventionSeparator)
                     }
-                    
+                } header: {
+                    Text("Naming of Files")
+                } footer: {
                     if namingConventionOrder == .titleFirst {
                         Text("Currently, Kuotes expects ALL books to be named like this: 'Title \(namingConventionSeparator) Author'")
-                            .font(.footnote)
                             .foregroundStyle(.red)
                     } else if namingConventionOrder == .authorFirst {
                         Text("Currently, Kuotes expects ALL books to be named like this: 'Author \(namingConventionSeparator) Title'")
-                            .font(.footnote)
                             .foregroundStyle(.red)
                     } else {
                         Text("Only toggle this when ALL your books follow the same naming convention")
                             .font(.footnote)
-                            .foregroundStyle(.red)
                     }
                 }
                 .listRowBackground(Color(.secondarySystemGroupedBackground).opacity(0.3))
@@ -94,6 +95,25 @@ struct SettingsView: View {
             .scrollContentBackground(.hidden)
             .background(.kBackground)
             .navigationTitle("Settings")
+            .toolbar {
+                // Ref: https://serialcoder.dev/text-tutorials/swiftui/morphing-sheets-out-of-buttons-in-swiftui/
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Select Folder") {
+                        showFolderSheet = true
+                    }
+                }
+                .matchedTransitionSource(id: "folder-button", in: folderTransition)
+            }
+            .sheet(isPresented: $showFolderSheet) {
+                FolderView() {
+                    showFolderSheet = false
+                }
+                .presentationDetents([.medium, .large])
+                .navigationTransition(
+                    .zoom(sourceID: "folder-button", in: folderTransition)
+                )
+            }
             .sheet(isPresented: $showingPasswordPopup) {
                 NavigationStack {
                     VStack {

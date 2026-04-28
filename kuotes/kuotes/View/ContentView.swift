@@ -17,9 +17,6 @@ struct ContentView: View {
             Tab("Kuotes", systemImage: "quote.bubble.fill") {
                 KuotesView(pendingKuoteID: $pendingQuoteID)
             }
-            Tab("Folders", systemImage: "folder.fill") {
-                FolderView()
-            }
             Tab("Settings", systemImage: "gearshape.fill") {
                 SettingsView()
             }

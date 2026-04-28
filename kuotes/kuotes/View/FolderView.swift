@@ -9,6 +9,7 @@ import SwiftData
 import SwiftUI
 
 struct FolderView: View {
+    let onSelected: () -> Void
     @AppStorage("selectedKuotesFolderPath") var selectedKuotesFolderPath:
         String = ""
     
@@ -16,6 +17,10 @@ struct FolderView: View {
     
     @Environment(\.modelContext) private var ctx
     @EnvironmentObject private var vm: FolderViewModel
+    
+    init(onSelected: @escaping () -> Void = {}) {
+        self.onSelected = onSelected
+    }
 
     var body: some View {
         NavigationStack {
@@ -26,8 +31,8 @@ struct FolderView: View {
                             Text(folder.href.absoluteString)
                                 .fontWeight(.bold)
                             Button("Select this folder") {
-                                selectedKuotesFolderPath =
-                                    folder.href.absoluteString
+                                selectedKuotesFolderPath = folder.href.absoluteString
+                                onSelected()
                             }
                         } label: {
                             Text(folder.name)

@@ -9,64 +9,70 @@ import SwiftUI
 import SwiftData
 
 struct BookKuotesView: View {
+    @Binding var selectedKuote: Kuote?
     var bookName: String
     var kuotes: [Kuote]
-    @Binding var selectedKuote: Kuote?
     
     @Environment(\.modelContext) private var ctx
     @EnvironmentObject private var filterVM: FilterHeaderViewModel
     @EnvironmentObject private var vm: KuotesViewModel
-
-    enum SortOrder: String, CaseIterable, Identifiable {
-        case ascending = "Ascending"
-        case descending = "Descending"
-
-        var id: String { rawValue }
-    }
+    @EnvironmentObject private var bookVM: BookKuotesViewModel
+    @Namespace private var kuoteAnimation
     
-    @State private var sortOrder: SortOrder = .ascending
-    
-    @State private var didDeleteKuote: Bool = false
-    @State private var deleteError: String? = nil
+    func handleTap(on kuote: Kuote) {
+        bookVM.prepareForSelection()
 
-    enum SortCriterium: String, CaseIterable, Identifiable {
-        case page = "Page"
-        case date = "Creation Date"
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+            selectedKuote = kuote
+        }
 
-        var id: String { rawValue }
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(350))
+            guard selectedKuote?.id == kuote.id else { return }
+
+            withAnimation(.easeOut(duration: 0.24)) {
+                bookVM.showFullSelectedKuote = true
+            }
+
+            try? await Task.sleep(for: .milliseconds(240))
+            guard selectedKuote?.id == kuote.id else { return }
+            bookVM.showFloatingEffect = true
+        }
     }
-    @State private var sortCriterium: SortCriterium = .page
 
-    var sortedKuotes: [Kuote] {
-        switch sortOrder {
-        case .ascending:
-            switch sortCriterium {
-            case .page:
-                return kuotes.sorted { $0.pageno < $1.pageno }
-            case .date:
-                return kuotes.sorted { $0.datetime < $1.datetime }
+    func closeSelectedKuote(_ kuote: Kuote) {
+        bookVM.showFloatingEffect = false
+
+        withAnimation(.easeOut(duration: 0.22)) {
+            bookVM.showFullSelectedKuote = false
+        }
+
+        Task { @MainActor in
+            try? await Task.sleep(for: .milliseconds(220))
+            guard selectedKuote?.id == kuote.id else { return }
+
+            bookVM.closingSelectedKuoteID = kuote.id
+            withAnimation(.spring(response: 0.35, dampingFraction: 0.85)) {
+                selectedKuote = nil
             }
-        case .descending:
-            switch sortCriterium {
-            case .page:
-                return kuotes.sorted { $0.pageno > $1.pageno }
-            case .date:
-                return kuotes.sorted { $0.datetime > $1.datetime }
-            }
+
+            try? await Task.sleep(for: .milliseconds(350))
+            guard bookVM.closingSelectedKuoteID == kuote.id else { return }
+            bookVM.closingSelectedKuoteID = nil
         }
     }
 
     var body: some View {
         List {
             Section {
-                Picker("Sorting Criteria", selection: $sortCriterium) {
+                Picker("Sorting Criteria", selection: $bookVM.sortCriterium) {
                     ForEach(SortCriterium.allCases) { crit in
                         Text(crit.rawValue).tag(crit)
                     }
                 }
                 .pickerStyle(.menu)
 
-                Picker("Sorting Order", selection: $sortOrder) {
+                Picker("Sorting Order", selection: $bookVM.sortOrder) {
                     ForEach(SortOrder.allCases) { order in
                         Text(order.rawValue).tag(order)
                     }
@@ -77,33 +83,37 @@ struct BookKuotesView: View {
             .listRowSeparator(.hidden)
 
             Section {
-                ForEach(sortedKuotes) { kuote in
-                    KuoteCard(kuote: kuote)
-                        .listRowSeparator(.hidden)
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(.init(top: 8, leading: 16, bottom: 8, trailing: 16))
-                        .sensoryFeedback(.selection, trigger: selectedKuote)
-                        .onTapGesture {
+                ForEach(bookVM.sortedKuotes(kuotes)) { kuote in
+                    let isHidden = bookVM.isRowHidden(
+                        kuoteID: kuote.id,
+                        selectedKuoteID: selectedKuote?.id
+                    )
+
+                    let onSelect: () -> Void = { handleTap(on: kuote) }
+                    let onChanged: () -> Void = {
+                        if selectedKuote?.id == kuote.id {
                             selectedKuote = kuote
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                            Button(role: .destructive) {
-                                Task {
-                                    do {
-                                        let found = try await FetchServices.shared.deleteHighlight(for: kuote)
-                                        if !found {
-                                            deleteError = "Kuote to be deleted could not be found"
-                                        } else {
-                                            didDeleteKuote = true
-                                        }
-                                    } catch {
-                                        deleteError = error.localizedDescription
-                                    }
-                                }
-                            } label: {
-                                Label("Delete", systemImage: "trash")
-                            }
-                        }
+                        bookVM.didChangeSelectedKuote = true
+                    }
+                    let onDelete: () -> Void = {
+                        Task { await bookVM.deleteKuote(kuote) }
+                    }
+
+                    KuoteRow(
+                        kuote: kuote,
+                        selectedKuote: $selectedKuote,
+                        kuoteAnimation: kuoteAnimation,
+                        onSelect: onSelect,
+                        onChanged: onChanged,
+                        onDelete: onDelete
+                    )
+                    .id(kuote.id)
+                    .onChange(of: kuote.color) { _, _ in
+                        onChanged()
+                    }
+                    .opacity(isHidden ? 0 : 1)
+                    .allowsHitTesting(!isHidden)
                 }
             }
         }
@@ -111,89 +121,113 @@ struct BookKuotesView: View {
         .background(.kBackground)
         .listRowBackground(Color.clear)
         .onDisappear {
-            guard didDeleteKuote else { return }
-            Task {
-                await vm.reloadKuotes(ctx: ctx)
-            }
+            reloadAfterDeleteIfNeeded()
+            reloadAfterSelectedKuoteDismissIfNeeded()
+        }
+        .onChange(of: selectedKuote?.id) { oldValue, newValue in
+            guard oldValue != nil && newValue == nil else { return }
+            reloadAfterSelectedKuoteDismissIfNeeded()
         }
         .refreshable { await vm.reloadKuotes(ctx: ctx) }
         .navigationTitle(bookName)
         .alert("Delete failed", isPresented: Binding(
-            get: { deleteError != nil },
+            get: { bookVM.deleteError != nil },
             set: { isPresented in
                 if !isPresented {
-                    deleteError = nil
+                    bookVM.deleteError = nil
                 }
             }
         )) {
             Button("OK", role: .cancel) {
-                deleteError = nil
+                bookVM.deleteError = nil
             }
         } message: {
-            Text(deleteError ?? "An unknown error occurred.")
+            Text(bookVM.deleteError ?? "An unknown error occurred.")
         }
         .safeAreaInset(edge: .bottom) {
             Color.clear.frame(height: 140)
         }
-    }
-    
-    private struct KuoteCard: View {
-        let kuote: Kuote
-        @Environment(\.colorScheme) private var colorScheme
-        
-        var body: some View {
-            ZStack(alignment: .topTrailing) {
-                VStack(alignment: .leading) {
-                    Text(kuote.fileItem.displayName)
-                        .frame(width: UIScreen.main.bounds.width * 0.7, alignment: .leading) // nicht in die Anführungszeichen reinragen
-                    Text("page \(kuote.pageno) ⋅ \(kuote.chapter)")
-                        .font(.subheadline)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                        .frame(width: UIScreen.main.bounds.width * 0.7, alignment: .leading) // nicht in die Anführungszeichen reinragen
-                    Text(kuote.text)
-                        .lineLimit(2)
-                        .padding(.vertical, 8)
-                        .font(.system(.body, design: .serif))
-                        .bold()
-                    Text(
-                        "\(kuote.datetime.formatted(.dateTime.year().month().day().hour().minute()))"
-                    )
-                    .font(.footnote)
-                    .foregroundStyle(.secondary)
-                }
-                .padding(18)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .background(
-                    colorScheme == .dark
-                        ? kuote.color.swiftUIColor.opacity(0.2)
-                        : kuote.color.swiftUIColor.opacity(0.3),
-                    in: RoundedRectangle(cornerRadius: 32)
-                )
-                .shadow(color: kuote.color.swiftUIColor, radius: 16, x: 0, y: 8)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 32)
-                        .stroke(
-                            .white.opacity(0.2),
-                            lineWidth: colorScheme == .dark ? 1 : 3)
-                }
-                
-                Text("❞")
-                    .font(.system(size: 50, weight: .bold))
-                    .foregroundColor(.white)
-                    .opacity(0.3)
-                    .frame(width: 75, height: 75)
+        .overlay {
+            if let _ = selectedKuote {
+                selectedKuoteOverlay()
             }
         }
     }
+    
+    @ViewBuilder
+    private func selectedKuoteOverlay() -> some View {
+        if let selectedKuote {
+            // Help the compiler with explicit constants
+            let selectedID = selectedKuote.id
+            ZStack {
+                Rectangle()
+                    .fill(.ultraThinMaterial)
+                    .ignoresSafeArea()
+                    .onTapGesture {
+                        closeSelectedKuote(selectedKuote)
+                    }
+
+                VStack {
+                    Spacer(minLength: 0)
+
+                    let card = KuoteCard(
+                        kuote: selectedKuote,
+                        detailed: bookVM.showFullSelectedKuote,
+                        isFrameFloating: bookVM.showFloatingEffect
+                    ) {
+                        // Refresh the selected kuote reference to reflect latest color changes
+                        if let current = kuotes.first(where: { $0.id == selectedID }) {
+                            self.selectedKuote = current
+                        }
+                        bookVM.didChangeSelectedKuote = true
+                    }
+                    card
+                        .matchedGeometryEffect(id: selectedID, in: kuoteAnimation)
+                        .padding(.horizontal, 16)
+                        .onTapGesture {
+                            closeSelectedKuote(selectedKuote)
+                        }
+
+                    Spacer(minLength: 0)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .transition(.scale.combined(with: .opacity))
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+        } else {
+            EmptyView()
+        }
+    }
+
+    private func reloadAfterSelectedKuoteDismissIfNeeded() {
+        guard bookVM.didChangeSelectedKuote else { return }
+        bookVM.didChangeSelectedKuote = false
+
+        Task {
+            await vm.reloadKuotes(ctx: ctx)
+        }
+    }
+
+    private func reloadAfterDeleteIfNeeded() {
+        guard bookVM.didDeleteKuote else { return }
+        bookVM.didDeleteKuote = false
+
+        Task {
+            await vm.reloadKuotes(ctx: ctx)
+        }
+    }
+    
 }
+
+
 
 #Preview {
     BookKuotesView(
+        selectedKuote: .constant(.templateLong),
         bookName: "Atomic Habits",
         kuotes: [.templateLong, .templateMedium, .templateShort],
-        selectedKuote: .constant(.templateLong),
     )
     .environmentObject(FilterHeaderViewModel())
     .environmentObject(KuotesViewModel())
+    .environmentObject(BookKuotesViewModel())
 }
